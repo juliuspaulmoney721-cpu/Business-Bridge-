@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Bridge Dashboard</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f7fc;
+}
+
+header{
+background:#12355b;
+color:white;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px;
+}
+
+header h1{
+font-size:28px;
+}
+
+.logout{
+background:white;
+color:#12355b;
+padding:10px 20px;
+border-radius:8px;
+text-decoration:none;
+font-weight:bold;
+}
+
+.welcome{
+text-align:center;
+padding:40px 20px;
+}
+
+.welcome h2{
+font-size:34px;
+color:#12355b;
+margin-bottom:10px;
+}
+
+.welcome p{
+color:#666;
+font-size:18px;
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:20px;
+padding:20px;
+}
+
+.stat{
+background:white;
+padding:25px;
+border-radius:15px;
+text-align:center;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+
+.stat h3{
+font-size:35px;
+color:#12355b;
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+padding:20px;
+}
+
+.card{
+background:white;
+padding:30px;
+border-radius:15px;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+text-align:center;
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+}
+
+.card h2{
+margin:15px 0;
+color:#12355b;
+}
+
+.card p{
+color:#666;
+margin-bottom:20px;
+}
+
+.btn{
+display:inline-block;
+padding:12px 25px;
+background:#12355b;
+color:white;
+text-decoration:none;
+border-radius:8px;
+}
+
+footer{
+margin-top:40px;
+background:#12355b;
+color:white;
+text-align:center;
+padding:20px;
+}
+</style>
+
+</head>
+<body>
+
+<header>
+<h1>Business Bridge</h1>
+
+<a href="login.html" class="logout">Logout</a>
+</header>
+
+<section class="welcome">
+<h2>Welcome to Business Bridge</h2>
+<p>Your all-in-one platform for learning, creating and growing with AI.</p>
+</section>
+
+<section class="stats">
+
+<div class="stat">
+<h3>2,540</h3>
+<p>Users</p>
+</div>
+
+<div class="stat">
+<h3>18,320</h3>
+<p>AI Chats</p>
+</div>
+
+<div class="stat">
+<h3>620</h3>
+<p>Projects</p>
+</div>
+
+<div class="stat">
+<h3>$48K</h3>
+<p>Revenue</p>
+</div>
+
+</section>
+
+<section class="cards">
+
+<div class="card">
+<h2>🤖 AI Assistant</h2>
+<p>Chat with Business Bridge AI.</p>
+<a href="ai.html" class="btn">Open</a>
+</div>
+
+<div class="card">
+<h2>🎓 Student Learning</h2>
+<p>Courses and learning tools.</p>
+<a href="students.html" class="btn">Open</a>
+</div>
+
+<div class="card">
+<h2>🎥 Creator Studio</h2>
+<p>Grow your content and audience.</p>
+<a href="creators.html" class="btn">Open</a>
+</div>
+
+<div class="card">
+<h2>💼 Business Tools</h2>
+<p>Powerful business resources.</p>
+<a href="business.html" class="btn">Open</a>
+</div>
+
+</section>
+
+<footer>
+© 2026 Business Bridge. All Rights Reserved.
+</footer>
+
+</body>
+</html>
