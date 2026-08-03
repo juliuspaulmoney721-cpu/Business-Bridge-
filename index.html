@@ -1,125 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CreatorBridge</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f5f7fa;
-      color: #222;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Bridge</title>
 
-    header {
-      background: #12355b;
-      color: white;
-      padding: 30px;
-      text-align: center;
-    }
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
 
-    header h1 {
-      margin: 0;
-      font-size: 36px;
-    }
+body{
+background:#f5f7fa;
+color:#333;
+}
 
-    header p {
-      font-size: 18px;
-    }
+nav{
+background:#12355b;
+padding:15px;
+display:flex;
+justify-content:center;
+flex-wrap:wrap;
+}
 
-    .container {
-      padding: 30px;
-      max-width: 1000px;
-      margin: auto;
-    }
+nav a{
+color:white;
+text-decoration:none;
+margin:10px;
+font-weight:bold;
+}
 
-    .cards {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
+.hero{
+background:linear-gradient(135deg,#12355b,#1d5d91);
+color:white;
+padding:80px 20px;
+text-align:center;
+}
 
-    .card {
-      background: white;
-      padding: 25px;
-      border-radius: 10px;
-      flex: 1;
-      min-width: 250px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
+.hero h1{
+font-size:48px;
+margin-bottom:20px;
+}
 
-    .card h2 {
-      color: #12355b;
-    }
+.hero p{
+font-size:20px;
+margin-bottom:30px;
+}
 
-    button {
-      background: #12355b;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+.hero button{
+padding:15px 30px;
+font-size:18px;
+border:none;
+border-radius:8px;
+background:white;
+color:#12355b;
+cursor:pointer;
+}
 
-    button:hover {
-      background: #1d5d91;
-    }
+.features{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+padding:40px;
+}
 
-    footer {
-      text-align: center;
-      padding: 20px;
-      background: #12355b;
-      color: white;
-      margin-top: 30px;
-    }
-  </style>
+.card{
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+text-align:center;
+}
+
+.card h2{
+color:#12355b;
+margin-bottom:10px;
+}
+
+.card a{
+display:inline-block;
+margin-top:15px;
+padding:10px 20px;
+background:#12355b;
+color:white;
+text-decoration:none;
+border-radius:6px;
+}
+
+footer{
+background:#12355b;
+color:white;
+text-align:center;
+padding:20px;
+margin-top:40px;
+}
+</style>
 </head>
 
 <body>
 
-<header>
-  <h1>CreatorBridge</h1>
-  <p>Helping creators build businesses and students achieve their goals.</p>
-</header>
+<nav>
+<a href="index.html">Home</a>
+<a href="creators.html">Creators</a>
+<a href="students.html">Students</a>
+<a href="business.html">Business</a>
+<a href="ai.html">AI Assistant</a>
+<a href="login.html">Login</a>
+</nav>
 
-<div class="container">
+<section class="hero">
+<h1>Business Bridge</h1>
+<p>Helping Creators, Students and Businesses succeed with AI.</p>
 
-  <div class="cards">
+<button onclick="location.href='login.html'">
+Get Started
+</button>
+</section>
 
-    <div class="card">
-      <h2>For Creators</h2>
-      <p>
-        Get tools, ideas, and guidance to grow your brand,
-        create content, and build a business.
-      </p>
-      <button>Start Creating</button>
-    </div>
+<section class="features">
 
-    <div class="card">
-      <h2>For Students</h2>
-      <p>
-        Learn new skills, access resources, and prepare
-        yourself for future opportunities.
-      </p>
-      <button>Start Learning</button>
-    </div>
-
-    <div class="card">
-      <h2>For Businesses</h2>
-      <p>
-        Connect with talented people and discover new
-        ideas, services, and opportunities.
-      </p>
-      <button>Explore Business</button>
-    </div>
-
-  </div>
-
+<div class="card">
+<h2>Creators</h2>
+<p>Grow your audience and build your business.</p>
+<a href="creators.html">Open</a>
 </div>
 
+<div class="card">
+<h2>Students</h2>
+<p>Learn new skills and prepare for your future.</p>
+<a href="students.html">Open</a>
+</div>
+
+<div class="card">
+<h2>Business</h2>
+<p>Connect with talented people and opportunities.</p>
+<a href="business.html">Open</a>
+</div>
+
+<div class="card">
+<h2>AI Assistant</h2>
+<p>Ask questions and get intelligent business help.</p>
+<a href="ai.html">Open</a>
+</div>
+
+</section>
+
 <footer>
-  © 2026 CreatorBridge. Building the future of creators and students.
+
+© 2026 Business Bridge. All Rights Reserved.
+
 </footer>
 
 </body>
