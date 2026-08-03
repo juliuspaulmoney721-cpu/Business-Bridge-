@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Bridge AI Chat</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f7fb;
+display:flex;
+height:100vh;
+}
+
+.sidebar{
+width:250px;
+background:#12355b;
+color:white;
+padding:20px;
+}
+
+.sidebar h2{
+margin-bottom:20px;
+}
+
+.sidebar a{
+display:block;
+color:white;
+text-decoration:none;
+padding:12px;
+margin:10px 0;
+border-radius:8px;
+background:rgba(255,255,255,.1);
+}
+
+.sidebar a:hover{
+background:#1f5fa8;
+}
+
+.main{
+flex:1;
+display:flex;
+flex-direction:column;
+}
+
+.header{
+background:#12355b;
+color:white;
+padding:20px;
+font-size:26px;
+font-weight:bold;
+}
+
+.chat-area{
+flex:1;
+padding:20px;
+overflow-y:auto;
+}
+
+.message{
+background:white;
+padding:15px;
+margin-bottom:15px;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+
+.input-area{
+display:flex;
+padding:15px;
+background:white;
+border-top:1px solid #ddd;
+}
+
+input{
+flex:1;
+padding:15px;
+font-size:16px;
+border:1px solid #ccc;
+border-radius:10px;
+}
+
+button{
+margin-left:10px;
+padding:15px 25px;
+border:none;
+background:#12355b;
+color:white;
+font-size:16px;
+border-radius:10px;
+cursor:pointer;
+}
+
+button:hover{
+background:#0d2745;
+}
+
+@media(max-width:768px){
+
+body{
+flex-direction:column;
+}
+
+.sidebar{
+width:100%;
+display:flex;
+overflow:auto;
+}
+
+.sidebar a{
+margin-right:10px;
+white-space:nowrap;
+}
+
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar">
+<h2>Business Bridge</h2>
+
+<a href="dashboard.html">🏠 Dashboard</a>
+<a href="#">➕ New Chat</a>
+<a href="#">🕒 History</a>
+<a href="index.html">⬅ Home</a>
+
+</div>
+
+<div class="main">
+
+<div class="header">
+AI Assistant
+</div>
+
+<div class="chat-area" id="chat">
+
+<div class="message">
+👋 Welcome to Business Bridge AI. Ask me anything about business, learning or AI.
+</div>
+
+</div>
+
+<div class="input-area">
+
+<input
+id="question"
+type="text"
+placeholder="Type your message...">
+
+<button onclick="sendMessage()">
+Send
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+function sendMessage(){
+
+let input=document.getElementById("question");
+
+let text=input.value.trim();
+
+if(text=="") return;
+
+let chat=document.getElementById("chat");
+
+chat.innerHTML+=`
+<div class="message">
+<b>You:</b><br>${text}
+</div>`;
+
+chat.innerHTML+=`
+<div class="message">
+<b>Business Bridge AI:</b><br>
+I'm currently a demo AI assistant. Soon I'll be connected to a real AI model like ChatGPT.
+</div>`;
+
+input.value="";
+
+chat.scrollTop=chat.scrollHeight;
+
+}
+
+</script>
+
+</body>
+</html>
