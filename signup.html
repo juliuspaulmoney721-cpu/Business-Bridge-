@@ -146,4 +146,7 @@ async function validateForm() {
   window.location.href = "login.html";
 
   return false;
-}
+document.getElementById("signupForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    await validateForm();
+});
