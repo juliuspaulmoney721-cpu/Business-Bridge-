@@ -116,21 +116,30 @@ Already have an account?
 </div>
 
 <script>
-function validateForm(){
+async function validateForm() {
 
-let password=document.getElementById("password").value;
-let confirm=document.getElementById("confirm").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const confirm = document.getElementById("confirm").value;
 
-if(password!==confirm){
-alert("Passwords do not match.");
-return false;
+  if (password !== confirm) {
+    alert("Passwords do not match.");
+    return false;
+  }
+
+  const { data, error } = await supabase.auth.signUp({
+    email: email,
+    password: password
+  });
+
+  if (error) {
+    alert(error.message);
+    return false;
+  }
+
+  alert("Account created successfully! Please check your email to verify your account.");
+
+  window.location.href = "login.html";
+
+  return false;
 }
-
-alert("Account created successfully!");
-return true;
-
-}
-</script>
-
-</body>
-</html>
