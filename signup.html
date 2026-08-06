@@ -87,7 +87,7 @@ button:hover{
 <h1>Business Bridge</h1>
 <p>Create your account</p>
 
-<form id="signupForm">
+<form onsubmit="return validateForm()">
 
 <input type="text" id="name" placeholder="Full Name" required>
 
@@ -119,41 +119,31 @@ Already have an account?
 import { supabase } from "./supabase.js";
 
 async function validateForm() {
-    const name = document.getElementById("name").value;
+
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
     const confirm = document.getElementById("confirm").value;
-    const account = document.getElementById("account").value;
 
-    if (password !== confirm) {
-        alert("Passwords do not match.");
-        return;
-    }
+    
 
-const { data, error } = await supabase.auth.signUp({
-  email: email,
-  password: password,
-  options: {
-    emailRedirectTo: "https://juliuspaulmoney721-cpu.github.io/Business-Bridge-/",
-    data: {
-      full_name: name,
-      account_type: account
-    }
+  if (password !== confirm) {
+    alert("Passwords do not match.");
+    return false;
   }
-});
 
-    if (error) {
-        alert(error.message);
-        return;
-    }
+  const { data, error } = await supabase.auth.signUp({
+    email: email,
+    password: password
+  });
 
-    alert("Account created successfully! Please check your email.");
+  if (error) {
+    alert(error.message);
+    return false;
+  }
 
-    window.location.href = "login.html";
+  alert("Account created successfully! Please check your email to verify your account.");
+
+  window.location.href = "login.html";
+
+  return false;
 }
-
-document.getElementById("signupForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    await validateForm();
-});
-</script>

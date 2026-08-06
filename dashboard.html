@@ -14,77 +14,100 @@ font-family:Arial,sans-serif;
 }
 
 body{
-background:#f4f6fb;
+background:#f4f7fc;
 }
 
 header{
 background:#12355b;
 color:white;
-padding:20px;
 display:flex;
 justify-content:space-between;
 align-items:center;
+padding:20px;
 }
 
 header h1{
-font-size:32px;
+font-size:28px;
 }
 
-#logoutBtn{
+.logout{
 background:white;
 color:#12355b;
-border:none;
-padding:12px 24px;
+padding:10px 20px;
 border-radius:8px;
-font-size:16px;
+text-decoration:none;
 font-weight:bold;
-cursor:pointer;
 }
 
-.hero{
-padding:60px 20px;
+.welcome{
 text-align:center;
+padding:40px 20px;
 }
 
-.hero h2{
-font-size:48px;
+.welcome h2{
+font-size:34px;
 color:#12355b;
-margin-bottom:15px;
+margin-bottom:10px;
 }
 
-.hero p{
-font-size:22px;
+.welcome p{
 color:#666;
+font-size:18px;
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:20px;
+padding:20px;
+}
+
+.stat{
+background:white;
+padding:25px;
+border-radius:15px;
+text-align:center;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+
+.stat h3{
+font-size:35px;
+color:#12355b;
 }
 
 .cards{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
 gap:20px;
-padding:30px;
+padding:20px;
 }
 
 .card{
 background:white;
-padding:25px;
+padding:30px;
 border-radius:15px;
 box-shadow:0 5px 15px rgba(0,0,0,.1);
 text-align:center;
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-5px);
 }
 
 .card h2{
+margin:15px 0;
 color:#12355b;
-margin-bottom:15px;
 }
 
 .card p{
+color:#666;
 margin-bottom:20px;
-color:#555;
 }
 
 .btn{
 display:inline-block;
-padding:12px 24px;
+padding:12px 25px;
 background:#12355b;
 color:white;
 text-decoration:none;
@@ -92,30 +115,49 @@ border-radius:8px;
 }
 
 footer{
-margin-top:30px;
-padding:25px;
+margin-top:40px;
+background:#12355b;
+color:white;
 text-align:center;
-color:#777;
+padding:20px;
 }
 </style>
 
 </head>
-
 <body>
 
 <header>
-
 <h1>Business Bridge</h1>
 
-<button id="logoutBtn">Logout</button>
-
+<a href="login.html" class="logout">Logout</a>
 </header>
 
-<section class="hero">
-
+<section class="welcome">
 <h2>Welcome to Business Bridge</h2>
-
 <p>Your all-in-one platform for learning, creating and growing with AI.</p>
+</section>
+
+<section class="stats">
+
+<div class="stat">
+<h3>2,540</h3>
+<p>Users</p>
+</div>
+
+<div class="stat">
+<h3>18,320</h3>
+<p>AI Chats</p>
+</div>
+
+<div class="stat">
+<h3>620</h3>
+<p>Projects</p>
+</div>
+
+<div class="stat">
+<h3>$48K</h3>
+<p>Revenue</p>
+</div>
 
 </section>
 
@@ -128,14 +170,14 @@ color:#777;
 </div>
 
 <div class="card">
-<h2>📚 Student Learning</h2>
+<h2>🎓 Student Learning</h2>
 <p>Courses and learning tools.</p>
 <a href="students.html" class="btn">Open</a>
 </div>
 
 <div class="card">
-<h2>🎬 Creator Studio</h2>
-<p>Create content and grow your audience.</p>
+<h2>🎥 Creator Studio</h2>
+<p>Grow your content and audience.</p>
 <a href="creators.html" class="btn">Open</a>
 </div>
 
@@ -148,60 +190,8 @@ color:#777;
 </section>
 
 <footer>
-
 © 2026 Business Bridge. All Rights Reserved.
-
 </footer>
-
-<script type="module">
-import { supabase } from "./supabase.js";
-
-// Check if the user is logged in
-const {
-  data: { session }
-} = await supabase.auth.getSession();
-
-if (!session) {
-  window.location.href = "login.html";
-}
-
-const user = session.user;
-
-// Create a profile card automatically
-const hero = document.querySelector(".hero");
-
-const profile = document.createElement("div");
-
-profile.style.background = "white";
-profile.style.padding = "20px";
-profile.style.margin = "20px auto";
-profile.style.maxWidth = "500px";
-profile.style.borderRadius = "12px";
-profile.style.boxShadow = "0 5px 15px rgba(0,0,0,0.1)";
-
-profile.innerHTML = `
-<h2>👤 My Profile</h2>
-
-<p><strong>Name:</strong> ${user.user_metadata.full_name || "User"}</p>
-
-<p><strong>Email:</strong> ${user.email}</p>
-
-<p><strong>Account:</strong> ${user.user_metadata.account_type || "Member"}</p>
-`;
-
-hero.after(profile);
-
-// Logout
-document.getElementById("logoutBtn").addEventListener("click", async () => {
-
-  await supabase.auth.signOut();
-
-  alert("Logged out successfully!");
-
-  window.location.href = "login.html";
-
-});
-</script>
 
 </body>
 </html>

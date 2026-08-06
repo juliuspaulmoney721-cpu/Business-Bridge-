@@ -67,9 +67,11 @@ a{
 
 <p>Welcome Back</p>
 
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
-<button id="loginBtn">Login</button>
+<input type="email" placeholder="Email">
+
+<input type="password" placeholder="Password">
+
+<button>Login</button>
 
 <p>Don't have an account?</p>
 
@@ -81,24 +83,5 @@ a{
 
 </div>
 
-<script type="module">
-import { supabase } from "./supabase.js";
-
-document.getElementById("loginBtn").addEventListener("click", async () => {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-    });
-
-    if (error) {
-        alert(error.message);
-        return;
-    }
-
-    alert("Login successful!");
-    window.location.href = "dashboard.html";
-});
-</script>
+</body>
+</html>
