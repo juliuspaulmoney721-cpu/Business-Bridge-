@@ -154,34 +154,53 @@ color:#777;
 </footer>
 
 <script type="module">
-
 import { supabase } from "./supabase.js";
 
-// Check if user is logged in
+// Check if the user is logged in
 const {
-data:{session}
-}=await supabase.auth.getSession();
+  data: { session }
+} = await supabase.auth.getSession();
 
-if(!session){
-window.location.href="login.html";
+if (!session) {
+  window.location.href = "login.html";
 }
 
-// Logout button
-document.getElementById("logoutBtn").addEventListener("click",async()=>{
+const user = session.user;
 
-const { error } = await supabase.auth.signOut();
+// Create a profile card automatically
+const hero = document.querySelector(".hero");
 
-if(error){
-alert(error.message);
-return;
-}
+const profile = document.createElement("div");
 
-alert("Logged out successfully!");
+profile.style.background = "white";
+profile.style.padding = "20px";
+profile.style.margin = "20px auto";
+profile.style.maxWidth = "500px";
+profile.style.borderRadius = "12px";
+profile.style.boxShadow = "0 5px 15px rgba(0,0,0,0.1)";
 
-window.location.href="login.html";
+profile.innerHTML = `
+<h2>👤 My Profile</h2>
+
+<p><strong>Name:</strong> ${user.user_metadata.full_name || "User"}</p>
+
+<p><strong>Email:</strong> ${user.email}</p>
+
+<p><strong>Account:</strong> ${user.user_metadata.account_type || "Member"}</p>
+`;
+
+hero.after(profile);
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+
+  await supabase.auth.signOut();
+
+  alert("Logged out successfully!");
+
+  window.location.href = "login.html";
 
 });
-
 </script>
 
 </body>
