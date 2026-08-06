@@ -161,8 +161,7 @@ if(!session){
 }
 
 // Logout
-document.getElementById("logoutBtn").addEventListener("click",async()=>{
-
+<button id="logoutBtn">Logout</button>
     await supabase.auth.signOut();
 
     alert("Logged out successfully!");
