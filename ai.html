@@ -163,10 +163,44 @@ prompt.value="";
 
 chat.innerHTML+=`
 
-<div class="message ai" id="thinking">
+const thinking=document.getElementById("thinking");
 
-⏳ Thinking...
+try{
 
-</div>
+const { data, error } = await supabase.functions.invoke("Chat-",{
+body:{
+prompt:text
+}
+});
 
-`;
+if(error) throw error;
+
+thinking.innerHTML=data.reply;
+
+}catch(err){
+
+thinking.innerHTML="❌ "+err.message;
+
+}
+
+chat.scrollTop=chat.scrollHeight;
+
+};
+
+prompt.addEventListener("keypress",(e)=>{
+
+if(e.key==="Enter" && !e.shiftKey){
+
+e.preventDefault();
+
+send.click();
+
+}
+
+});
+
+</script>
+
+</body>
+
+</html>
