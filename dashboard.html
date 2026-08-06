@@ -7,100 +7,104 @@
 
 <style>
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, sans-serif;
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
 }
 
 body{
-    background:#f4f6fb;
+background:#f4f6fb;
 }
 
 header{
-    background:#12355b;
-    color:white;
-    padding:20px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+background:#12355b;
+color:white;
+padding:20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
 
 header h1{
-    font-size:30px;
+font-size:32px;
 }
 
-button{
-    padding:10px 20px;
-    border:none;
-    border-radius:8px;
-    background:white;
-    color:#12355b;
-    font-size:16px;
-    cursor:pointer;
-    font-weight:bold;
+#logoutBtn{
+background:white;
+color:#12355b;
+border:none;
+padding:12px 24px;
+border-radius:8px;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
 }
 
 .hero{
-    text-align:center;
-    padding:50px 20px;
+padding:60px 20px;
+text-align:center;
 }
 
 .hero h2{
-    color:#12355b;
-    font-size:45px;
-    margin-bottom:15px;
+font-size:48px;
+color:#12355b;
+margin-bottom:15px;
 }
 
 .hero p{
-    color:#666;
-    font-size:20px;
+font-size:22px;
+color:#666;
 }
 
 .cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:20px;
-    padding:30px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+padding:30px;
 }
 
 .card{
-    background:white;
-    border-radius:15px;
-    padding:25px;
-    text-align:center;
-    box-shadow:0 0 10px rgba(0,0,0,.1);
+background:white;
+padding:25px;
+border-radius:15px;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+text-align:center;
 }
 
 .card h2{
-    color:#12355b;
-    margin-bottom:15px;
+color:#12355b;
+margin-bottom:15px;
 }
 
 .card p{
-    margin-bottom:20px;
+margin-bottom:20px;
+color:#555;
 }
 
 .btn{
-    display:inline-block;
-    text-decoration:none;
-    background:#12355b;
-    color:white;
-    padding:10px 20px;
-    border-radius:8px;
+display:inline-block;
+padding:12px 24px;
+background:#12355b;
+color:white;
+text-decoration:none;
+border-radius:8px;
 }
 
 footer{
-    text-align:center;
-    padding:20px;
-    color:#777;
+margin-top:30px;
+padding:25px;
+text-align:center;
+color:#777;
 }
 </style>
 
 </head>
+
 <body>
 
 <header>
+
 <h1>Business Bridge</h1>
 
 <button id="logoutBtn">Logout</button>
@@ -131,7 +135,7 @@ footer{
 
 <div class="card">
 <h2>🎬 Creator Studio</h2>
-<p>Grow your audience and content.</p>
+<p>Create content and grow your audience.</p>
 <a href="creators.html" class="btn">Open</a>
 </div>
 
@@ -145,7 +149,7 @@ footer{
 
 <footer>
 
-© 2026 Business Bridge. All Rights Reserved
+© 2026 Business Bridge. All Rights Reserved.
 
 </footer>
 
@@ -153,20 +157,28 @@ footer{
 
 import { supabase } from "./supabase.js";
 
-// Check login
-const { data:{session} } = await supabase.auth.getSession();
+// Check if user is logged in
+const {
+data:{session}
+}=await supabase.auth.getSession();
 
 if(!session){
-    window.location.href="login.html";
+window.location.href="login.html";
 }
 
-// Logout
-<button id="logoutBtn">Logout</button>
-    await supabase.auth.signOut();
+// Logout button
+document.getElementById("logoutBtn").addEventListener("click",async()=>{
 
-    alert("Logged out successfully!");
+const { error } = await supabase.auth.signOut();
 
-    window.location.href="login.html";
+if(error){
+alert(error.message);
+return;
+}
+
+alert("Logged out successfully!");
+
+window.location.href="login.html";
 
 });
 
