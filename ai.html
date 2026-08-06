@@ -169,7 +169,7 @@ try{
 
 const { data, error } = await supabase.functions.invoke("Chat-",{
 body:{
-prompt:text
+  message:text
 }
 });
 
