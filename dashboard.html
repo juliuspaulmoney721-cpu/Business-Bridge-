@@ -7,119 +7,93 @@
 
 <style>
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
 }
 
 body{
-background:#f4f7fc;
+    background:#f4f6fb;
 }
 
 header{
-background:#12355b;
-color:white;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:20px;
+    background:#12355b;
+    color:white;
+    padding:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
 
 header h1{
-font-size:28px;
+    font-size:30px;
 }
 
-.logout{
-background:white;
-color:#12355b;
-padding:10px 20px;
-border-radius:8px;
-text-decoration:none;
-font-weight:bold;
+button{
+    padding:10px 20px;
+    border:none;
+    border-radius:8px;
+    background:white;
+    color:#12355b;
+    font-size:16px;
+    cursor:pointer;
+    font-weight:bold;
 }
 
-.welcome{
-text-align:center;
-padding:40px 20px;
+.hero{
+    text-align:center;
+    padding:50px 20px;
 }
 
-.welcome h2{
-font-size:34px;
-color:#12355b;
-margin-bottom:10px;
+.hero h2{
+    color:#12355b;
+    font-size:45px;
+    margin-bottom:15px;
 }
 
-.welcome p{
-color:#666;
-font-size:18px;
-}
-
-.stats{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-gap:20px;
-padding:20px;
-}
-
-.stat{
-background:white;
-padding:25px;
-border-radius:15px;
-text-align:center;
-box-shadow:0 5px 15px rgba(0,0,0,.1);
-}
-
-.stat h3{
-font-size:35px;
-color:#12355b;
+.hero p{
+    color:#666;
+    font-size:20px;
 }
 
 .cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:20px;
-padding:20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+    padding:30px;
 }
 
 .card{
-background:white;
-padding:30px;
-border-radius:15px;
-box-shadow:0 5px 15px rgba(0,0,0,.1);
-text-align:center;
-transition:.3s;
-}
-
-.card:hover{
-transform:translateY(-5px);
+    background:white;
+    border-radius:15px;
+    padding:25px;
+    text-align:center;
+    box-shadow:0 0 10px rgba(0,0,0,.1);
 }
 
 .card h2{
-margin:15px 0;
-color:#12355b;
+    color:#12355b;
+    margin-bottom:15px;
 }
 
 .card p{
-color:#666;
-margin-bottom:20px;
+    margin-bottom:20px;
 }
 
 .btn{
-display:inline-block;
-padding:12px 25px;
-background:#12355b;
-color:white;
-text-decoration:none;
-border-radius:8px;
+    display:inline-block;
+    text-decoration:none;
+    background:#12355b;
+    color:white;
+    padding:10px 20px;
+    border-radius:8px;
 }
 
 footer{
-margin-top:40px;
-background:#12355b;
-color:white;
-text-align:center;
-padding:20px;
+    text-align:center;
+    padding:20px;
+    color:#777;
 }
 </style>
 
@@ -129,35 +103,15 @@ padding:20px;
 <header>
 <h1>Business Bridge</h1>
 
-<a href="login.html" class="logout">Logout</a>
+<button id="logoutBtn">Logout</button>
+
 </header>
 
-<section class="welcome">
+<section class="hero">
+
 <h2>Welcome to Business Bridge</h2>
+
 <p>Your all-in-one platform for learning, creating and growing with AI.</p>
-</section>
-
-<section class="stats">
-
-<div class="stat">
-<h3>2,540</h3>
-<p>Users</p>
-</div>
-
-<div class="stat">
-<h3>18,320</h3>
-<p>AI Chats</p>
-</div>
-
-<div class="stat">
-<h3>620</h3>
-<p>Projects</p>
-</div>
-
-<div class="stat">
-<h3>$48K</h3>
-<p>Revenue</p>
-</div>
 
 </section>
 
@@ -170,14 +124,14 @@ padding:20px;
 </div>
 
 <div class="card">
-<h2>🎓 Student Learning</h2>
+<h2>📚 Student Learning</h2>
 <p>Courses and learning tools.</p>
 <a href="students.html" class="btn">Open</a>
 </div>
 
 <div class="card">
-<h2>🎥 Creator Studio</h2>
-<p>Grow your content and audience.</p>
+<h2>🎬 Creator Studio</h2>
+<p>Grow your audience and content.</p>
 <a href="creators.html" class="btn">Open</a>
 </div>
 
@@ -190,8 +144,34 @@ padding:20px;
 </section>
 
 <footer>
-© 2026 Business Bridge. All Rights Reserved.
+
+© 2026 Business Bridge. All Rights Reserved
+
 </footer>
+
+<script type="module">
+
+import { supabase } from "./supabase.js";
+
+// Check login
+const { data:{session} } = await supabase.auth.getSession();
+
+if(!session){
+    window.location.href="login.html";
+}
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click",async()=>{
+
+    await supabase.auth.signOut();
+
+    alert("Logged out successfully!");
+
+    window.location.href="login.html";
+
+});
+
+</script>
 
 </body>
 </html>
