@@ -20,7 +20,10 @@ body {
     min-height: 100vh;
 }
 
-/* TOP NAVIGATION */
+/* =========================
+   TOP NAVIGATION
+========================= */
+
 .topbar {
     height: 72px;
     border-bottom: 1px solid #262626;
@@ -67,19 +70,30 @@ body {
     border: 1px solid #40204c;
 }
 
-/* MAIN */
+/* =========================
+   MAIN
+========================= */
+
 .container {
     max-width: 680px;
     margin: auto;
 }
 
-/* STORIES */
+/* =========================
+   STORIES
+========================= */
+
 .stories {
     display: flex;
     gap: 20px;
     padding: 22px 15px;
     overflow-x: auto;
     border-bottom: 1px solid #262626;
+    scrollbar-width: none;
+}
+
+.stories::-webkit-scrollbar {
+    display: none;
 }
 
 .story {
@@ -99,37 +113,25 @@ body {
     background: #171017;
     color: #d14cff;
     font-size: 21px;
-    position: relative;
 }
 
 .story-name {
-    margin-top: 7px;
-    color: #ddd;
+    display: block;
+    margin-top: 8px;
     font-size: 12px;
+    color: #ccc;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.add-story {
-    position: absolute;
-    right: -4px;
-    bottom: -3px;
-    width: 23px;
-    height: 23px;
-    border-radius: 50%;
-    background: #c94cff;
-    color: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-}
+/* =========================
+   CREATE POST
+========================= */
 
-/* CREATE POST */
-.create-box {
-    margin: 18px 15px;
-    padding: 15px;
-    border: 1px solid #292929;
-    border-radius: 14px;
-    background: #0d0d0d;
+.create {
+    padding: 18px 15px;
+    border-bottom: 1px solid #262626;
 }
 
 .create-row {
@@ -160,6 +162,10 @@ body {
     text-decoration: none;
 }
 
+.create-input:hover {
+    border-color: #c94cff;
+}
+
 .create-buttons {
     display: flex;
     justify-content: space-around;
@@ -175,9 +181,13 @@ body {
 .create-buttons span {
     color: #c94cff;
     font-size: 18px;
+    margin-right: 5px;
 }
 
-/* POSTS */
+/* =========================
+   POSTS
+========================= */
+
 .post {
     border: 1px solid #292929;
     border-radius: 14px;
@@ -223,18 +233,31 @@ body {
 .more {
     font-size: 22px;
     color: #aaa;
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 
-/* POST IMAGE */
+/* =========================
+   POST IMAGE
+========================= */
+
 .post-image {
     width: 100%;
     height: 480px;
-    background: linear-gradient(135deg, #151515, #282828);
+    background:
+        linear-gradient(
+            135deg,
+            #151020,
+            #30103b,
+            #090909
+        );
     display: flex;
     align-items: center;
     justify-content: center;
     color: #aaa;
     font-size: 70px;
+    overflow: hidden;
 }
 
 .post-image img {
@@ -243,7 +266,10 @@ body {
     object-fit: cover;
 }
 
-/* POST ACTIONS */
+/* =========================
+   POST ACTIONS
+========================= */
+
 .post-actions {
     display: flex;
     align-items: center;
@@ -263,6 +289,10 @@ body {
     color: #d14cff;
 }
 
+.action.liked {
+    color: #d14cff;
+}
+
 .save {
     margin-left: auto;
 }
@@ -270,26 +300,35 @@ body {
 .likes {
     padding: 5px 15px;
     font-weight: bold;
+    font-size: 14px;
 }
 
 .caption {
     padding: 5px 15px 17px;
     color: #ddd;
     line-height: 1.5;
+    font-size: 14px;
 }
 
 .comments {
     padding: 0 15px 18px;
     color: #777;
     font-size: 14px;
+    cursor: pointer;
 }
 
-/* BOTTOM NAVIGATION */
+/* =========================
+   MOBILE BOTTOM NAV
+========================= */
+
 .bottom-nav {
     display: none;
 }
 
-/* DESKTOP */
+/* =========================
+   DESKTOP
+========================= */
+
 @media (min-width: 768px) {
 
     .bottom-nav {
@@ -301,7 +340,10 @@ body {
     }
 }
 
-/* MOBILE */
+/* =========================
+   MOBILE
+========================= */
+
 @media (max-width: 767px) {
 
     .topbar {
@@ -321,8 +363,9 @@ body {
         font-size: 23px;
     }
 
-    .nav-icons a.hide-mobile {
-        display: none;
+    .profile-small {
+        width: 34px;
+        height: 34px;
     }
 
     .container {
@@ -330,64 +373,193 @@ body {
         padding-bottom: 80px;
     }
 
+    .stories {
+        gap: 17px;
+        padding: 18px 12px;
+    }
+
+    .story {
+        min-width: 72px;
+    }
+
+    .story-circle {
+        width: 62px;
+        height: 62px;
+    }
+
+    .post {
+        margin: 15px 8px;
+        border-radius: 12px;
+    }
+
     .post-image {
-        height: 420px;
+        height: 430px;
+    }
+
+    .create {
+        padding: 15px 10px;
     }
 
     .bottom-nav {
         position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 65px;
-        background: #000;
-        border-top: 1px solid #292929;
         display: flex;
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+        height: 70px;
+        background: rgba(25, 27, 32, 0.96);
+        border: 1px solid #343842;
+        border-radius: 38px;
+        z-index: 999;
         align-items: center;
         justify-content: space-around;
-        z-index: 200;
+        box-shadow: 0 5px 30px rgba(0,0,0,.5);
     }
 
     .bottom-nav a {
-        color: #aaa;
+        color: #fff;
         text-decoration: none;
-        text-align: center;
-        font-size: 23px;
+        width: 20%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+    }
+
+    .bottom-nav a span {
+        font-size: 22px;
+        line-height: 1;
+    }
+
+    .bottom-nav a small {
+        font-size: 11px;
     }
 
     .bottom-nav a.active {
-        color: #d14cff;
+        color: #69a9ff;
     }
+}
 
-    .bottom-nav small {
-        display: block;
-        font-size: 10px;
-        margin-top: 2px;
-    }
+/* =========================
+   MODAL
+========================= */
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.75);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-box {
+    width: 100%;
+    max-width: 500px;
+    background: #151515;
+    border: 1px solid #333;
+    border-radius: 18px;
+    padding: 20px;
+}
+
+.modal-box h2 {
+    margin-bottom: 15px;
+}
+
+.modal-box textarea {
+    width: 100%;
+    min-height: 130px;
+    resize: none;
+    background: #080808;
+    border: 1px solid #333;
+    color: #fff;
+    border-radius: 12px;
+    padding: 12px;
+    outline: none;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.modal-buttons button {
+    border: none;
+    border-radius: 20px;
+    padding: 10px 18px;
+    cursor: pointer;
+}
+
+.cancel {
+    background: #333;
+    color: #fff;
+}
+
+.publish {
+    background: #c94cff;
+    color: #fff;
+}
+
+/* =========================
+   EMPTY IMAGE
+========================= */
+
+.image-placeholder {
+    text-align: center;
+}
+
+.image-placeholder div {
+    font-size: 70px;
+}
+
+.image-placeholder small {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #777;
 }
 </style>
 </head>
 
 <body>
 
-<!-- TOP BAR -->
+<!-- =========================
+     TOP NAVIGATION
+========================= -->
+
 <header class="topbar">
 
-    <a href="dashboard.html" class="logo">Pixora</a>
+    <a href="dashboard.html" class="logo">
+        Pixora
+    </a>
 
     <nav class="nav-icons">
 
-        <a href="dashboard.html" title="Home">⌂</a>
+        <a href="search.html" aria-label="Search">
+            ⌕
+        </a>
 
-        <a href="search.html" title="Search">⌕</a>
+        <a href="create.html" aria-label="Create">
+            ＋
+        </a>
 
-        <a href="create.html" title="Create">⊞</a>
+        <a href="chat.html" aria-label="Messages">
+            ♡
+        </a>
 
-        <a href="chat.html" title="Messages">▢</a>
-
-        <a href="#" class="hide-mobile" title="Notifications">♧</a>
-
-        <a href="profile.html" class="profile-small">J</a>
+        <a href="profile.html" class="profile-small" aria-label="Profile">
+            J
+        </a>
 
     </nav>
 
@@ -396,275 +568,477 @@ body {
 
 <main class="container">
 
-    <!-- STORIES -->
-    <section class="stories">
+<!-- =========================
+     STORIES
+========================= -->
 
-        <div class="story">
+<section class="stories">
 
-            <div class="story-circle">
-                J
-                <span class="add-story">+</span>
-            </div>
+    <div class="story">
+        <div class="story-circle">+</div>
+        <span class="story-name">Your story</span>
+    </div>
 
-            <div class="story-name">Your story</div>
+    <div class="story">
+        <div class="story-circle">A</div>
+        <span class="story-name">Alex</span>
+    </div>
 
+    <div class="story">
+        <div class="story-circle">M</div>
+        <span class="story-name">Maria</span>
+    </div>
+
+    <div class="story">
+        <div class="story-circle">D</div>
+        <span class="story-name">David</span>
+    </div>
+
+    <div class="story">
+        <div class="story-circle">S</div>
+        <span class="story-name">Sarah</span>
+    </div>
+
+    <div class="story">
+        <div class="story-circle">K</div>
+        <span class="story-name">Kevin</span>
+    </div>
+
+</section>
+
+
+<!-- =========================
+     CREATE
+========================= -->
+
+<section class="create">
+
+    <div class="create-row">
+
+        <div class="create-avatar">
+            J
         </div>
 
-        <div class="story">
+        <a href="create.html" class="create-input">
+            What do you want to share?
+        </a>
 
-            <div class="story-circle">T</div>
-            <div class="story-name">Thank God</div>
+    </div>
 
+    <div class="create-buttons">
+
+        <a href="create.html">
+            <span>▣</span>
+            Photo
+        </a>
+
+        <a href="create.html">
+            <span>▶</span>
+            Video
+        </a>
+
+        <a href="create.html">
+            <span>☺</span>
+            Feeling
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     POST 1
+========================= -->
+
+<article class="post">
+
+    <div class="post-header">
+
+        <div class="post-avatar">
+            J
         </div>
 
-        <div class="story">
-
-            <div class="story-circle">A</div>
-            <div class="story-name">Alex</div>
-
-        </div>
-
-        <div class="story">
-
-            <div class="story-circle">M</div>
-            <div class="story-name">Maria</div>
-
-        </div>
-
-        <div class="story">
-
-            <div class="story-circle">D</div>
-            <div class="story-name">David</div>
-
-        </div>
-
-    </section>
-
-
-    <!-- CREATE POST -->
-    <section class="create-box">
-
-        <div class="create-row">
-
-            <div class="create-avatar">J</div>
-
-            <a href="create.html" class="create-input">
-                What do you want to share?
-            </a>
-
-        </div>
-
-        <div class="create-buttons">
-
-            <a href="create.html">
-                <span>▣</span> Photo
-            </a>
-
-            <a href="create.html">
-                <span>▶</span> Video
-            </a>
-
-            <a href="create.html">
-                <span>☺</span> Feeling
-            </a>
-
-        </div>
-
-    </section>
-
-
-    <!-- POST 1 -->
-    <article class="post">
-
-        <div class="post-header">
-
-            <div class="post-avatar">T</div>
-
-            <div class="post-user">
-
-                <strong>Thank God</strong>
-
-                <small>14 days ago</small>
-
-            </div>
-
-            <div class="more">•••</div>
-
-        </div>
-
-
-        <div class="post-image">
-
-            👕
-            
-        </div>
-
-
-        <div class="post-actions">
-
-            <button class="action" onclick="likePost(this)">
-                ♡
-            </button>
-
-            <a href="chat.html" class="action">
-                ♡
-            </a>
-
-            <button class="action">
-                ↗
-            </button>
-
-            <button class="action save">
-                ♧
-            </button>
-
-        </div>
-
-
-        <div class="likes">
-            <span class="like-count">1</span> like
-        </div>
-
-
-        <div class="caption">
-            <strong>Thank God</strong>
-            I love my wife. ❤️
-        </div>
-
-
-        <div class="comments">
-            View all comments
-        </div>
-
-    </article>
-
-
-    <!-- POST 2 -->
-    <article class="post">
-
-        <div class="post-header">
-
-            <div class="post-avatar">J</div>
-
-            <div class="post-user">
-
-                <strong>James</strong>
-
-                <small>Just now</small>
-
-            </div>
-
-            <div class="more">•••</div>
-
-        </div>
-
-
-        <div class="post-image">
-            ✨
-        </div>
-
-
-        <div class="post-actions">
-
-            <button class="action" onclick="likePost(this)">
-                ♡
-            </button>
-
-            <button class="action">
-                ♧
-            </button>
-
-            <button class="action">
-                ↗
-            </button>
-
-            <button class="action save">
-                ♧
-            </button>
-
-        </div>
-
-
-        <div class="likes">
-            <span class="like-count">0</span> likes
-        </div>
-
-
-        <div class="caption">
+        <div class="post-user">
             <strong>James</strong>
-            Welcome to Pixora. 🚀
+            <small>Just now</small>
         </div>
 
+        <button class="more" onclick="showMore(this)">
+            ⋯
+        </button>
 
-        <div class="comments">
-            Be the first to comment
+    </div>
+
+
+    <div class="post-image">
+
+        <div class="image-placeholder">
+            <div>✦</div>
+            <small>Pixora</small>
         </div>
 
-    </article>
+    </div>
+
+
+    <div class="post-actions">
+
+        <button class="action like-button"
+                onclick="toggleLike(this)">
+            ♡
+        </button>
+
+        <button class="action">
+            ♧
+        </button>
+
+        <button class="action">
+            ✈
+        </button>
+
+        <button class="action save">
+            ♧
+        </button>
+
+    </div>
+
+    <div class="likes">
+        <span class="like-count">0</span> likes
+    </div>
+
+    <div class="caption">
+        <strong>James</strong>
+        Welcome to Pixora. Share your moments, connect with people, and discover something new.
+    </div>
+
+    <div class="comments">
+        View all comments
+    </div>
+
+</article>
+
+
+<!-- =========================
+     POST 2
+========================= -->
+
+<article class="post">
+
+    <div class="post-header">
+
+        <div class="post-avatar">
+            P
+        </div>
+
+        <div class="post-user">
+            <strong>Pixora</strong>
+            <small>Today</small>
+        </div>
+
+        <button class="more" onclick="showMore(this)">
+            ⋯
+        </button>
+
+    </div>
+
+
+    <div class="post-image">
+        <div class="image-placeholder">
+            <div>✦</div>
+            <small>Create something beautiful</small>
+        </div>
+    </div>
+
+
+    <div class="post-actions">
+
+        <button class="action like-button"
+                onclick="toggleLike(this)">
+            ♡
+        </button>
+
+        <button class="action">
+            ♧
+        </button>
+
+        <button class="action">
+            ✈
+        </button>
+
+        <button class="action save">
+            ♧
+        </button>
+
+    </div>
+
+    <div class="likes">
+        <span class="like-count">0</span> likes
+    </div>
+
+    <div class="caption">
+        <strong>Pixora</strong>
+        Your space to create, share and connect.
+    </div>
+
+    <div class="comments">
+        View all comments
+    </div>
+
+</article>
 
 </main>
 
 
-<!-- MOBILE BOTTOM NAV -->
+<!-- =========================
+     MOBILE BOTTOM NAV
+========================= -->
+
 <nav class="bottom-nav">
 
     <a href="dashboard.html" class="active">
-        ⌂
+        <span>⌂</span>
         <small>Home</small>
     </a>
 
     <a href="search.html">
-        ⌕
+        <span>⌕</span>
         <small>Search</small>
     </a>
 
     <a href="create.html">
-        ⊞
+        <span>⊞</span>
         <small>Create</small>
     </a>
 
     <a href="chat.html">
-        ▢
+        <span>□</span>
         <small>Messages</small>
     </a>
 
     <a href="profile.html">
-        ●
+        <span>●</span>
         <small>Profile</small>
     </a>
 
 </nav>
 
 
+<!-- =========================
+     CREATE MODAL
+========================= -->
+
+<div class="modal" id="createModal">
+
+    <div class="modal-box">
+
+        <h2>Create a post</h2>
+
+        <textarea
+            id="postText"
+            placeholder="Write something..."></textarea>
+
+        <div class="modal-buttons">
+
+            <button
+                class="cancel"
+                onclick="closeModal()">
+                Cancel
+            </button>
+
+            <button
+                class="publish"
+                onclick="publishPost()">
+                Publish
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 <script>
 
-function likePost(button) {
+/* =========================
+   LIKE SYSTEM
+========================= */
+
+function toggleLike(button) {
 
     const post = button.closest(".post");
+    const countElement = post.querySelector(".like-count");
 
-    const countElement =
-        post.querySelector(".like-count");
+    let count = parseInt(countElement.textContent) || 0;
 
-    let count =
-        parseInt(countElement.textContent);
+    if (button.classList.contains("liked")) {
 
-    if (button.textContent.trim() === "♡") {
+        button.classList.remove("liked");
+        button.textContent = "♡";
 
-        count++;
-
-        button.textContent = "♥";
+        count = Math.max(0, count - 1);
 
     } else {
 
-        count--;
+        button.classList.add("liked");
+        button.textContent = "♥";
 
-        button.textContent = "♡";
+        count++;
 
     }
 
     countElement.textContent = count;
-
 }
+
+
+/* =========================
+   MORE BUTTON
+========================= */
+
+function showMore(button) {
+
+    const options = [
+        "Save post",
+        "Share post",
+        "Report post",
+        "Cancel"
+    ];
+
+    const choice = prompt(
+        "Pixora options:\n\n" +
+        "1. Save post\n" +
+        "2. Share post\n" +
+        "3. Report post\n" +
+        "4. Cancel"
+    );
+
+    if (choice === "1") {
+        alert("Post saved.");
+    }
+
+    if (choice === "2") {
+        alert("Share link copied.");
+    }
+
+    if (choice === "3") {
+        alert("Thank you. The post has been reported.");
+    }
+}
+
+
+/* =========================
+   CREATE MODAL
+========================= */
+
+function openModal() {
+
+    const modal = document.getElementById("createModal");
+
+    if (modal) {
+        modal.classList.add("show");
+    }
+}
+
+function closeModal() {
+
+    const modal = document.getElementById("createModal");
+
+    if (modal) {
+        modal.classList.remove("show");
+    }
+}
+
+function publishPost() {
+
+    const text = document.getElementById("postText").value.trim();
+
+    if (!text) {
+        alert("Please write something first.");
+        return;
+    }
+
+    alert("Your post has been created.");
+
+    document.getElementById("postText").value = "";
+
+    closeModal();
+}
+
+
+/* =========================
+   STORY CLICK
+========================= */
+
+document.querySelectorAll(".story").forEach(function(story) {
+
+    story.addEventListener("click", function() {
+
+        const name = story.querySelector(".story-name");
+
+        if (name) {
+            alert("Opening " + name.textContent + " story...");
+        }
+
+    });
+
+});
+
+
+/* =========================
+   CREATE INPUT
+========================= */
+
+document.querySelector(".create-input").addEventListener(
+    "click",
+    function() {
+        // Allows the normal create.html navigation.
+    }
+);
+
+
+/* =========================
+   IMAGE ERROR PROTECTION
+========================= */
+
+document.querySelectorAll(".post-image img").forEach(function(img) {
+
+    img.addEventListener("error", function() {
+
+        this.style.display = "none";
+
+        const placeholder = document.createElement("div");
+
+        placeholder.className = "image-placeholder";
+
+        placeholder.innerHTML =
+            "<div>✦</div>" +
+            "<small>Pixora</small>";
+
+        this.parentElement.appendChild(placeholder);
+
+    });
+
+});
+
+
+/* =========================
+   MOBILE NAV ACTIVE STATE
+========================= */
+
+document.querySelectorAll(".bottom-nav a").forEach(function(link) {
+
+    link.addEventListener("click", function() {
+
+        document.querySelectorAll(".bottom-nav a")
+            .forEach(function(item) {
+                item.classList.remove("active");
+            });
+
+        this.classList.add("active");
+
+    });
+
+});
 
 </script>
 
