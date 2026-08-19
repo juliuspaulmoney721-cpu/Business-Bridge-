@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Create - Business Bridge</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #000;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      height: 72px;
+      border-bottom: 1px solid #262626;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      position: sticky;
+      top: 0;
+      background: #000;
+      z-index: 100;
+    }
+
+    .back {
+      color: #fff;
+      text-decoration: none;
+      font-size: 28px;
+    }
+
+    .logo {
+      font-family: Georgia, serif;
+      font-size: 28px;
+      font-weight: bold;
+      color: #d14cff;
+      text-decoration: none;
+    }
+
+    .profile-small {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #28102f;
+      color: #d14cff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      border: 1px solid #40204c;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: auto;
+      padding: 25px 15px 100px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #888;
+      margin-bottom: 25px;
+    }
+
+    .create-box {
+      background: #0b0b0b;
+      border: 1px solid #292929;
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: #28102f;
+      color: #d14cff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .user strong {
+      display: block;
+      font-size: 15px;
+    }
+
+    .user small {
+      color: #777;
+      display: block;
+      margin-top: 4px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      resize: vertical;
+      background: #181818;
+      border: 1px solid #292929;
+      border-radius: 14px;
+      padding: 15px;
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    textarea:focus {
+      border-color: #d14cff;
+    }
+
+    textarea::placeholder {
+      color: #777;
+    }
+
+    .image-box {
+      margin-top: 15px;
+      padding: 18px;
+      border: 1px dashed #444;
+      border-radius: 14px;
+      text-align: center;
+      color: #888;
+    }
+
+    .image-box span {
+      display: block;
+      font-size: 30px;
+      color: #d14cff;
+      margin-bottom: 8px;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .choose-image {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 18px;
+      border-radius: 20px;
+      background: #28102f;
+      color: #d14cff;
+      cursor: pointer;
+      border: 1px solid #40204c;
+    }
+
+    .preview {
+      display: none;
+      width: 100%;
+      max-height: 350px;
+      object-fit: cover;
+      border-radius: 14px;
+      margin-top: 15px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+      gap: 12px;
+    }
+
+    .cancel {
+      color: #aaa;
+      text-decoration: none;
+      padding: 12px 20px;
+    }
+
+    .post-button {
+      border: none;
+      border-radius: 25px;
+      padding: 13px 25px;
+      background: #d14cff;
+      color: #fff;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .post-button:hover {
+      opacity: 0.9;
+    }
+
+    .message {
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #142d1b;
+      color: #70e090;
+      text-align: center;
+    }
+
+    /* MOBILE */
+
+    .bottom-nav {
+      display: none;
+    }
+
+    @media (max-width: 767px) {
+
+      .topbar {
+        height: 62px;
+        padding: 0 15px;
+      }
+
+      .logo {
+        font-size: 24px;
+      }
+
+      .container {
+        padding: 22px 15px 100px;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+
+      .bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 12px;
+        left: 15px;
+        right: 15px;
+        height: 72px;
+        background: rgba(24, 26, 32, 0.96);
+        border: 1px solid #333;
+        border-radius: 35px;
+        z-index: 999;
+        align-items: center;
+        justify-content: space-around;
+        backdrop-filter: blur(12px);
+      }
+
+      .bottom-nav a {
+        color: #aaa;
+        text-decoration: none;
+        text-align: center;
+        font-size: 25px;
+      }
+
+      .bottom-nav small {
+        display: block;
+        font-size: 11px;
+        margin-top: 3px;
+      }
+
+      .bottom-nav a.active {
+        color: #d14cff;
+      }
+
+      .create-box {
+        padding: 16px;
+      }
+
+      textarea {
+        min-height: 160px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .bottom-nav {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+
+    <a href="dashboard.html" class="back">‹</a>
+
+    <a href="dashboard.html" class="logo">
+      Business Bridge
+    </a>
+
+    <div class="profile-small">
+      BB
+    </div>
+
+  </header>
+
+
+  <main class="container">
+
+    <h1>Create</h1>
+
+    <p class="subtitle">
+      Share something with your Business Bridge community.
+    </p>
+
+
+    <section class="create-box">
+
+      <div class="user">
+
+        <div class="avatar">
+          BB
+        </div>
+
+        <div>
+          <strong>Business Bridge</strong>
+          <small>Create a new post</small>
+        </div>
+
+      </div>
+
+
+      <textarea
+        id="postText"
+        placeholder="What do you want to share?"
+      ></textarea>
+
+
+      <div class="image-box">
+
+        <span>＋</span>
+
+        <div>
+          Add an image to your post
+        </div>
+
+        <label class="choose-image" for="imageInput">
+          Choose Image
+        </label>
+
+        <input
+          type="file"
+          id="imageInput"
+          accept="image/*"
+        >
+
+        <img
+          id="preview"
+          class="preview"
+          alt="Image preview"
+        >
+
+      </div>
+
+
+      <div class="actions">
+
+        <a href="dashboard.html" class="cancel">
+          Cancel
+        </a>
+
+        <button
+          type="button"
+          class="post-button"
+          onclick="createPost()"
+        >
+          Publish Post
+        </button>
+
+      </div>
+
+
+      <div id="message" class="message">
+        Post created successfully!
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- MOBILE BOTTOM NAV -->
+
+  <nav class="bottom-nav">
+
+    <a href="dashboard.html">
+      🏠
+      <small>Home</small>
+    </a>
+
+    <a href="chat.html">
+      💬
+      <small>Inbox</small>
+    </a>
+
+    <a href="search.html">
+      🔎
+      <small>Explore</small>
+    </a>
+
+    <a href="profile.html">
+      👤
+      <small>Profile</small>
+    </a>
+
+  </nav>
+
+
+  <script>
+
+    const imageInput = document.getElementById("imageInput");
+    const preview = document.getElementById("preview");
+
+    imageInput.addEventListener("change", function () {
+
+      const file = this.files[0];
+
+      if (!file) {
+        preview.style.display = "none";
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = function (event) {
+        preview.src = event.target.result;
+        preview.style.display = "block";
+      };
+
+      reader.readAsDataURL(file);
+
+    });
+
+
+    function createPost() {
+
+      const text = document
+        .getElementById("postText")
+        .value
+        .trim();
+
+      const message = document.getElementById("message");
+
+      if (!text && !imageInput.files.length) {
+
+        alert("Please write something or choose an image.");
+
+        return;
+      }
+
+      message.style.display = "block";
+
+      message.textContent =
+        "Post created successfully!";
+
+      document.getElementById("postText").value = "";
+
+      imageInput.value = "";
+
+      preview.src = "";
+
+      preview.style.display = "none";
+
+      setTimeout(function () {
+
+        message.style.display = "none";
+
+      }, 3000);
+
+    }
+
+  </script>
+
+</body>
+</html>
