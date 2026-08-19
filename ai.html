@@ -3,157 +3,248 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zen AI - Business Bridge</title>
+<title>Zen AI — Business Bridge</title>
 
 <style>
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-    background: #09070d;
-    color: white;
-    min-height: 100vh;
+  background: #07050a;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
 }
 
 header {
-    background: #12091c;
-    padding: 20px;
-    text-align: center;
-    border-bottom: 1px solid #39204d;
+  height: 70px;
+  background: #0d0812;
+  border-bottom: 1px solid #2b1a35;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .logo {
-    font-size: 30px;
-    font-weight: bold;
+  font-size: 27px;
+  font-weight: bold;
+  color: #c34cff;
 }
 
-.logo span {
-    color: #b83cff;
-}
-
-.subtitle {
-    color: #aaa;
-    margin-top: 5px;
+.header-link {
+  color: #bbb;
+  text-decoration: none;
+  font-size: 14px;
 }
 
 .container {
-    max-width: 700px;
-    margin: auto;
-    padding: 25px 18px 100px;
+  width: 100%;
+  max-width: 760px;
+  margin: auto;
+  padding: 25px 16px 130px;
 }
 
 .hero {
-    text-align: center;
-    padding: 25px 0;
+  text-align: center;
+  padding: 25px 10px 20px;
 }
 
 .zen-icon {
-    width: 80px;
-    height: 80px;
-    border: 3px solid #b83cff;
-    border-radius: 50%;
-    margin: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 35px;
-    background: #1c0d29;
+  width: 78px;
+  height: 78px;
+  margin: auto;
+  border-radius: 50%;
+  background: #1b0d25;
+  border: 2px solid #c34cff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  font-weight: bold;
+  box-shadow: 0 0 25px rgba(195,76,255,.25);
 }
 
 .hero h1 {
-    margin-top: 18px;
-    font-size: 36px;
+  margin-top: 16px;
+  font-size: 34px;
 }
 
 .hero h1 span {
-    color: #b83cff;
+  color: #c34cff;
 }
 
 .hero p {
-    color: #aaa;
-    margin-top: 8px;
-    font-size: 17px;
+  color: #999;
+  margin-top: 8px;
+  line-height: 1.5;
 }
 
-.chat-box {
-    background: #151018;
-    border: 1px solid #39204d;
-    border-radius: 20px;
-    padding: 20px;
-    min-height: 230px;
-    margin-top: 20px;
+.chat {
+  min-height: 320px;
+  background: #0e0b11;
+  border: 1px solid #2d1b37;
+  border-radius: 20px;
+  padding: 18px;
 }
 
 .welcome {
-    color: #ddd;
-    line-height: 1.6;
+  background: #17101d;
+  border-radius: 16px;
+  padding: 17px;
+  line-height: 1.6;
+  color: #ddd;
 }
 
 .welcome strong {
-    color: #c653ff;
+  color: #c34cff;
 }
 
-.quick-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 20px;
+.message {
+  margin-top: 14px;
+  padding: 13px 15px;
+  border-radius: 15px;
+  line-height: 1.55;
+  white-space: pre-wrap;
 }
 
-.quick-buttons button {
-    background: #21132d;
-    color: white;
-    border: 1px solid #593074;
-    border-radius: 12px;
-    padding: 15px 8px;
-    font-size: 14px;
-    cursor: pointer;
+.user {
+  background: #2a1438;
+  margin-left: 35px;
 }
 
-.quick-buttons button:hover {
-    background: #38204b;
+.zen {
+  background: #151017;
+  border: 1px solid #2a1a32;
+  margin-right: 35px;
+}
+
+.zen strong {
+  color: #c34cff;
+}
+
+.quick-title {
+  color: #999;
+  font-size: 13px;
+  margin: 20px 0 10px;
+}
+
+.quick {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.quick button {
+  background: #17101d;
+  color: #eee;
+  border: 1px solid #3a2347;
+  border-radius: 12px;
+  padding: 13px 8px;
+  cursor: pointer;
+}
+
+.quick button:hover {
+  border-color: #c34cff;
+  background: #21132b;
 }
 
 .input-area {
-    display: flex;
-    gap: 10px;
-    margin-top: 18px;
+  position: fixed;
+  bottom: 68px;
+  left: 0;
+  right: 0;
+  background: rgba(7,5,10,.96);
+  border-top: 1px solid #2b1a35;
+  padding: 12px;
+  z-index: 9;
 }
 
-.input-area input {
-    flex: 1;
-    background: #151018;
-    color: white;
-    border: 1px solid #593074;
-    border-radius: 14px;
-    padding: 16px;
-    font-size: 15px;
-    outline: none;
+.input-inner {
+  max-width: 760px;
+  margin: auto;
+  display: flex;
+  gap: 8px;
 }
 
-.input-area button {
-    background: #a934e8;
-    color: white;
-    border: none;
-    border-radius: 14px;
-    padding: 0 20px;
-    font-weight: bold;
-    cursor: pointer;
+input {
+  flex: 1;
+  min-width: 0;
+  background: #151017;
+  color: white;
+  border: 1px solid #3a2347;
+  border-radius: 14px;
+  padding: 15px;
+  outline: none;
 }
 
-.input-area button:hover {
-    background: #c653ff;
+input:focus {
+  border-color: #c34cff;
 }
 
-footer {
-    text-align: center;
-    color: #777;
-    padding: 25px;
-    font-size: 13px;
+.send {
+  background: #a936df;
+  color: white;
+  border: 0;
+  border-radius: 14px;
+  padding: 0 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 68px;
+  background: #09070c;
+  border-top: 1px solid #2b1a35;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 10;
+}
+
+.bottom a {
+  color: #aaa;
+  text-decoration: none;
+  text-align: center;
+  font-size: 21px;
+}
+
+.bottom span {
+  display: block;
+  font-size: 10px;
+  margin-top: 3px;
+}
+
+.bottom .active {
+  color: #c34cff;
+}
+
+@media (max-width: 600px) {
+  .quick {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .hero h1 {
+    font-size: 30px;
+  }
+
+  .user {
+    margin-left: 15px;
+  }
+
+  .zen {
+    margin-right: 15px;
+  }
 }
 </style>
 </head>
@@ -161,130 +252,231 @@ footer {
 <body>
 
 <header>
-<div class="logo"><span>ZEN</span></div>
-<div class="subtitle">Zen AI — Business Bridge</div>
+  <div class="logo">ZEN</div>
+  <a class="header-link" href="index.html">Business Bridge</a>
 </header>
 
-<div class="container">
+<main class="container">
 
-    <section class="hero">
-        <div class="zen-icon">Z</div>
+  <section class="hero">
+    <div class="zen-icon">Z</div>
 
-        <h1>Meet <span>Zen AI</span></h1>
+    <h1>Meet <span>Zen AI</span></h1>
 
-        <p>
-            Your intelligent assistant for business, ideas,
-            technology and growth.
-        </p>
-    </section>
+    <p>
+      Your intelligent assistant for business,
+      technology, creativity and growth.
+    </p>
+  </section>
 
-    <div class="chat-box" id="chatBox">
+  <section class="chat" id="chat">
 
-        <div class="welcome">
-            👋 <strong>Hello, I'm Zen.</strong><br><br>
+    <div class="welcome">
+      👋 <strong>Hello, I'm Zen.</strong><br><br>
+      I'm your Business Bridge assistant. Ask me about
+      business, websites, apps, marketing, technology,
+      ideas or your projects.
+    </div>
 
-            I'm here to help you build, create, learn and grow.
-            Ask me a question or choose one of the options below.
-        </div>
+    <div class="quick-title">What can Zen help you with?</div>
 
-        <div class="quick-buttons">
-            <button onclick="askZen('Help me with my business')">
-                💼 Business Help
-            </button>
+    <div class="quick">
 
-            <button onclick="askZen('Give me a business idea')">
-                💡 Business Ideas
-            </button>
+      <button onclick="askZen('Help me with my business')">
+        💼 Business
+      </button>
 
-            <button onclick="askZen('Help me build an app')">
-                📱 Build an App
-            </button>
+      <button onclick="askZen('Give me a business idea')">
+        💡 Ideas
+      </button>
 
-            <button onclick="askZen('Help me with marketing')">
-                📣 Marketing
-            </button>
+      <button onclick="askZen('Help me build an app')">
+        📱 App Building
+      </button>
 
-            <button onclick="askZen('Help me create a website')">
-                🌐 Website Help
-            </button>
+      <button onclick="askZen('Help me create a website')">
+        🌐 Websites
+      </button>
 
-            <button onclick="askZen('Help me understand trading')">
-                📈 Trading Help
-            </button>
-        </div>
+      <button onclick="askZen('Help me with marketing')">
+        📣 Marketing
+      </button>
+
+      <button onclick="askZen('Help me learn coding')">
+        💻 Coding
+      </button>
 
     </div>
 
-    <div class="input-area">
-        <input
-            type="text"
-            id="userInput"
-            placeholder="Ask Zen anything..."
-            onkeypress="handleKey(event)"
-        >
+  </section>
 
-        <button onclick="sendMessage()">Send</button>
-    </div>
+</main>
+
+<div class="input-area">
+
+  <div class="input-inner">
+
+    <input
+      id="messageInput"
+      type="text"
+      placeholder="Ask Zen anything..."
+      autocomplete="off"
+    >
+
+    <button class="send" onclick="sendMessage()">
+      Send
+    </button>
+
+  </div>
 
 </div>
 
-<footer>
-    © 2026 Business Bridge • Powered by Zen AI
-</footer>
+<nav class="bottom">
+
+  <a href="index.html">
+    ⌂
+    <span>Home</span>
+  </a>
+
+  <a href="creators.html">
+    ⌕
+    <span>Explore</span>
+  </a>
+
+  <a href="ai.html" class="active">
+    ✦
+    <span>Zen</span>
+  </a>
+
+  <a href="chat.html">
+    ♡
+    <span>Messages</span>
+  </a>
+
+  <a href="login.html">
+    ◉
+    <span>Profile</span>
+  </a>
+
+</nav>
 
 <script>
 
+const chat = document.getElementById("chat");
+const input = document.getElementById("messageInput");
+
 function sendMessage() {
 
-    const input = document.getElementById("userInput");
-    const message = input.value.trim();
+  const message = input.value.trim();
 
-    if (message === "") {
-        return;
-    }
+  if (!message) return;
 
-    askZen(message);
-    input.value = "";
-}
+  askZen(message);
 
-function handleKey(event) {
-
-    if (event.key === "Enter") {
-        sendMessage();
-    }
+  input.value = "";
 }
 
 function askZen(message) {
 
-    const chatBox = document.getElementById("chatBox");
+  const user = document.createElement("div");
 
-    const userMessage = document.createElement("div");
+  user.className = "message user";
 
-    userMessage.style.marginTop = "20px";
-    userMessage.style.padding = "12px";
-    userMessage.style.background = "#2a1738";
-    userMessage.style.borderRadius = "12px";
+  user.innerHTML =
+    "<strong>You</strong><br>" +
+    escapeHtml(message);
 
-    userMessage.innerHTML = "<strong>You:</strong><br>" + message;
+  chat.appendChild(user);
 
-    chatBox.appendChild(userMessage);
+  const zen = document.createElement("div");
 
-    const zenMessage = document.createElement("div");
+  zen.className = "message zen";
 
-    zenMessage.style.marginTop = "12px";
-    zenMessage.style.padding = "12px";
-    zenMessage.style.background = "#151018";
-    zenMessage.style.borderRadius = "12px";
-    zenMessage.style.color = "#ddd";
+  zen.innerHTML =
+    "<strong>Zen</strong><br>" +
+    getZenResponse(message);
 
-    zenMessage.innerHTML =
-        "<strong style='color:#c653ff'>Zen:</strong><br>" +
-        "I'm ready to help you with that. The AI connection will be added next.";
+  chat.appendChild(zen);
 
-    chatBox.appendChild(zenMessage);
-
-    chatBox.scrollTop = chatBox.scrollHeight;
+  window.scrollTo({
+    top: document.body.scrollHeight,
+    behavior: "smooth"
+  });
 }
+
+function getZenResponse(message) {
+
+  const text = message.toLowerCase();
+
+  if (
+    text.includes("business idea") ||
+    text.includes("business ideas")
+  ) {
+    return "Let's build something valuable. Tell me what skills, resources and budget you have, and Zen can help you turn an idea into a practical business plan.";
+  }
+
+  if (
+    text.includes("business") ||
+    text.includes("company")
+  ) {
+    return "I can help you plan a business, define your customers, create an offer, build a website and develop a marketing strategy.";
+  }
+
+  if (
+    text.includes("app") ||
+    text.includes("application")
+  ) {
+    return "Yes. We can break your app into screens, features, database structure and user flows, then build it step by step.";
+  }
+
+  if (
+    text.includes("website") ||
+    text.includes("web")
+  ) {
+    return "I can help you plan your website structure, design the pages and organize the features before connecting the backend.";
+  }
+
+  if (
+    text.includes("marketing") ||
+    text.includes("advertising")
+  ) {
+    return "Let's focus on the customer first. Tell me what you're selling and who you want to reach, and we can build a marketing strategy around it.";
+  }
+
+  if (
+    text.includes("coding") ||
+    text.includes("code")
+  ) {
+    return "I can help you understand and build your code step by step. Send me the file, error or feature you want to work on.";
+  }
+
+  if (
+    text.includes("hello") ||
+    text.includes("hi") ||
+    text.includes("hey")
+  ) {
+    return "Hello! 👋 I'm Zen. What are we building today?";
+  }
+
+  return "I'm Zen, your Business Bridge assistant. I understand your message, but my full AI brain isn't connected yet. The next step is connecting this interface to Zen's real backend.";
+}
+
+function escapeHtml(text) {
+
+  const div = document.createElement("div");
+
+  div.textContent = text;
+
+  return div.innerHTML;
+}
+
+input.addEventListener("keydown", function(event) {
+
+  if (event.key === "Enter") {
+    sendMessage();
+  }
+
+});
 
 </script>
 
