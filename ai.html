@@ -3,212 +3,290 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Business Bridge AI</title>
+<title>Zen AI - Business Bridge</title>
 
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
 }
 
-body{
-background:#f5f7fb;
-display:flex;
-flex-direction:column;
-height:100vh;
+body {
+    background: #09070d;
+    color: white;
+    min-height: 100vh;
 }
 
-header{
-background:#12355b;
-color:white;
-padding:20px;
-text-align:center;
-font-size:28px;
-font-weight:bold;
+header {
+    background: #12091c;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid #39204d;
 }
 
-#chat{
-flex:1;
-overflow-y:auto;
-padding:20px;
+.logo {
+    font-size: 30px;
+    font-weight: bold;
 }
 
-.message{
-max-width:80%;
-padding:14px;
-margin-bottom:15px;
-border-radius:12px;
-line-height:1.5;
-word-wrap:break-word;
+.logo span {
+    color: #b83cff;
 }
 
-.user{
-margin-left:auto;
-background:#12355b;
-color:white;
+.subtitle {
+    color: #aaa;
+    margin-top: 5px;
 }
 
-.ai{
-background:white;
-border:1px solid #ddd;
-color:#222;
+.container {
+    max-width: 700px;
+    margin: auto;
+    padding: 25px 18px 100px;
 }
 
-.bottom{
-display:flex;
-padding:15px;
-gap:10px;
-background:white;
-border-top:1px solid #ddd;
+.hero {
+    text-align: center;
+    padding: 25px 0;
 }
 
-textarea{
-flex:1;
-height:60px;
-padding:12px;
-border-radius:10px;
-border:1px solid #ccc;
-font-size:16px;
-resize:none;
+.zen-icon {
+    width: 80px;
+    height: 80px;
+    border: 3px solid #b83cff;
+    border-radius: 50%;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 35px;
+    background: #1c0d29;
 }
 
-button{
-background:#12355b;
-color:white;
-border:none;
-padding:15px 25px;
-border-radius:10px;
-font-size:16px;
-cursor:pointer;
+.hero h1 {
+    margin-top: 18px;
+    font-size: 36px;
 }
 
-button:hover{
-background:#0d2743;
+.hero h1 span {
+    color: #b83cff;
 }
 
+.hero p {
+    color: #aaa;
+    margin-top: 8px;
+    font-size: 17px;
+}
+
+.chat-box {
+    background: #151018;
+    border: 1px solid #39204d;
+    border-radius: 20px;
+    padding: 20px;
+    min-height: 230px;
+    margin-top: 20px;
+}
+
+.welcome {
+    color: #ddd;
+    line-height: 1.6;
+}
+
+.welcome strong {
+    color: #c653ff;
+}
+
+.quick-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.quick-buttons button {
+    background: #21132d;
+    color: white;
+    border: 1px solid #593074;
+    border-radius: 12px;
+    padding: 15px 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.quick-buttons button:hover {
+    background: #38204b;
+}
+
+.input-area {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.input-area input {
+    flex: 1;
+    background: #151018;
+    color: white;
+    border: 1px solid #593074;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 15px;
+    outline: none;
+}
+
+.input-area button {
+    background: #a934e8;
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 0 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.input-area button:hover {
+    background: #c653ff;
+}
+
+footer {
+    text-align: center;
+    color: #777;
+    padding: 25px;
+    font-size: 13px;
+}
 </style>
-
 </head>
 
 <body>
 
 <header>
-
-🤖 Business Bridge AI
-
+    <div class="logo"><span>ZEN</span> AI</div>
+    <div class="subtitle">Business Bridge Intelligent Assistant</div>
 </header>
 
-<div id="chat">
+<div class="container">
 
-<div class="message ai">
+    <section class="hero">
+        <div class="zen-icon">Z</div>
 
-Hello 👋
+        <h1>Meet <span>Zen AI</span></h1>
 
-<br><br>
+        <p>
+            Your intelligent assistant for business, ideas,
+            technology and growth.
+        </p>
+    </section>
 
-I am your Business Bridge AI assistant.
+    <div class="chat-box" id="chatBox">
 
-Ask me anything about business, coding, marketing, studying or life.
+        <div class="welcome">
+            👋 <strong>Hello, I'm Zen.</strong><br><br>
 
-</div>
+            I'm here to help you build, create, learn and grow.
+            Ask me a question or choose one of the options below.
+        </div>
 
-</div>
+        <div class="quick-buttons">
+            <button onclick="askZen('Help me with my business')">
+                💼 Business Help
+            </button>
 
-<div class="bottom">
+            <button onclick="askZen('Give me a business idea')">
+                💡 Business Ideas
+            </button>
 
-<textarea
-id="prompt"
-placeholder="Ask anything..."
-></textarea>
+            <button onclick="askZen('Help me build an app')">
+                📱 Build an App
+            </button>
 
-<button id="sendBtn">
+            <button onclick="askZen('Help me with marketing')">
+                📣 Marketing
+            </button>
 
-Send
+            <button onclick="askZen('Help me create a website')">
+                🌐 Website Help
+            </button>
 
-</button>
+            <button onclick="askZen('Help me understand trading')">
+                📈 Trading Help
+            </button>
+        </div>
 
-</div>
+    </div>
 
-<script type="module">
+    <div class="input-area">
+        <input
+            type="text"
+            id="userInput"
+            placeholder="Ask Zen anything..."
+            onkeypress="handleKey(event)"
+        >
 
-import { supabase } from "./supabase.js";
-
-const chat=document.getElementById("chat");
-
-const prompt=document.getElementById("prompt");
-
-const send=document.getElementById("sendBtn");
-
-send.onclick=async()=>{
-
-const text=prompt.value.trim();
-
-if(text=="") return;
-
-chat.innerHTML+=`
-
-<div class="message user">
-
-${text}
-
-</div>
-
-`;
-
-prompt.value="";
-
-chat.innerHTML+=`
-
-<div class="message ai" id="thinking">
-
-⏳ Thinking...
+        <button onclick="sendMessage()">Send</button>
+    </div>
 
 </div>
 
-`;
+<footer>
+    © 2026 Business Bridge • Powered by Zen AI
+</footer>
 
-const thinking=document.getElementById("thinking");
+<script>
 
-try{
+function sendMessage() {
 
-const { data, error } = await supabase.functions.invoke("Chat-",{
-body:{
-  message:text
-}
-});
+    const input = document.getElementById("userInput");
+    const message = input.value.trim();
 
-if(error) throw error;
+    if (message === "") {
+        return;
+    }
 
-thinking.innerHTML=data.reply;
-
-}catch(err){
-
-thinking.innerHTML="❌ "+err.message;
-
+    askZen(message);
+    input.value = "";
 }
 
-chat.scrollTop=chat.scrollHeight;
+function handleKey(event) {
 
-};
-
-prompt.addEventListener("keypress",(e)=>{
-
-if(e.key==="Enter" && !e.shiftKey){
-
-e.preventDefault();
-
-send.click();
-
+    if (event.key === "Enter") {
+        sendMessage();
+    }
 }
 
-});
+function askZen(message) {
+
+    const chatBox = document.getElementById("chatBox");
+
+    const userMessage = document.createElement("div");
+
+    userMessage.style.marginTop = "20px";
+    userMessage.style.padding = "12px";
+    userMessage.style.background = "#2a1738";
+    userMessage.style.borderRadius = "12px";
+
+    userMessage.innerHTML = "<strong>You:</strong><br>" + message;
+
+    chatBox.appendChild(userMessage);
+
+    const zenMessage = document.createElement("div");
+
+    zenMessage.style.marginTop = "12px";
+    zenMessage.style.padding = "12px";
+    zenMessage.style.background = "#151018";
+    zenMessage.style.borderRadius = "12px";
+    zenMessage.style.color = "#ddd";
+
+    zenMessage.innerHTML =
+        "<strong style='color:#c653ff'>Zen:</strong><br>" +
+        "I'm ready to help you with that. The AI connection will be added next.";
+
+    chatBox.appendChild(zenMessage);
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
 
 </script>
 
 </body>
-
 </html>
