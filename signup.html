@@ -1,111 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
 
-<title>Business Bridge - Sign Up</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-<style>
-* {
-    box-sizing: border-box;
-}
+  <title>Business Bridge - Sign Up</title>
 
-body {
-    margin: 0;
-    background: #000;
-    color: white;
-    font-family: Arial, sans-serif;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-.container {
-    width: 90%;
-    max-width: 420px;
-    margin: 50px auto;
-    padding: 30px 25px;
-    background: #111;
-    border: 1px solid #333;
-    border-radius: 20px;
-    box-shadow: 0 0 25px rgba(190, 60, 255, 0.15);
-}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #222;
+    }
 
-h1 {
-    text-align: center;
-    color: #c84cff;
-    font-size: 32px;
-    margin-bottom: 10px;
-}
+    .container {
+      width: 90%;
+      max-width: 420px;
+      margin: 50px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    }
 
-p {
-    text-align: center;
-    color: #aaa;
-    margin-bottom: 30px;
-}
+    h1 {
+      text-align: center;
+      color: #12355b;
+      margin-bottom: 10px;
+    }
 
-input,
-select {
-    width: 100%;
-    padding: 15px;
-    margin-bottom: 15px;
-    background: #1a1a1a;
-    color: white;
-    border: 1px solid #444;
-    border-radius: 12px;
-    font-size: 16px;
-    outline: none;
-}
+    p {
+      text-align: center;
+      color: #666;
+      margin-bottom: 25px;
+    }
 
-input:focus,
-select:focus {
-    border-color: #c84cff;
-}
+    input,
+    select {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+    }
 
-button {
-    width: 100%;
-    padding: 16px;
-    background: #c84cff;
-    color: white;
-    border: none;
-    border-radius: 30px;
-    font-size: 17px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
-}
+    button {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: #12355b;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-button:hover {
-    background: #b638ed;
-}
+    button:disabled {
+      opacity: 0.6;
+    }
 
-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
+    .login {
+      text-align: center;
+      margin-top: 20px;
+    }
 
-.login {
-    text-align: center;
-    margin-top: 25px;
-    color: #aaa;
-}
+    .login a {
+      color: #12355b;
+      text-decoration: none;
+      font-weight: bold;
+    }
 
-.login a {
-    color: #c84cff;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-#message {
-    text-align: center;
-    min-height: 25px;
-    margin-top: 20px;
-    color: #c84cff;
-}
-</style>
+    #message {
+      text-align: center;
+      min-height: 24px;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
+  <div class="container">
 
     <h1>Business Bridge</h1>
 
@@ -113,232 +101,226 @@ button:disabled {
 
     <form id="signupForm">
 
-        <input
-            type="text"
-            id="name"
-            placeholder="Full Name"
-            required
-        >
+      <input
+        type="text"
+        id="name"
+        placeholder="Full Name"
+        required
+      >
 
-        <input
-            type="email"
-            id="email"
-            placeholder="Email Address"
-            required
-        >
+      <input
+        type="email"
+        id="email"
+        placeholder="Email Address"
+        required
+      >
 
-        <input
-            type="password"
-            id="password"
-            placeholder="Password"
-            required
-        >
+      <input
+        type="password"
+        id="password"
+        placeholder="Password"
+        required
+      >
 
-        <input
-            type="password"
-            id="confirm"
-            placeholder="Confirm Password"
-            required
-        >
+      <input
+        type="password"
+        id="confirm"
+        placeholder="Confirm Password"
+        required
+      >
 
-        <select id="account" required>
+      <select id="account" required>
 
-            <option value="">
-                Select Account Type
-            </option>
+        <option value="">
+          Select Account Type
+        </option>
 
-            <option value="Student">
-                Student
-            </option>
+        <option value="Student">
+          Student
+        </option>
 
-            <option value="Creator">
-                Creator
-            </option>
+        <option value="Creator">
+          Creator
+        </option>
 
-            <option value="Business">
-                Business
-            </option>
+        <option value="Business">
+          Business
+        </option>
 
-        </select>
+      </select>
 
-        <button type="submit" id="signupButton">
-            Create Account
-        </button>
+      <button
+        type="submit"
+        id="signupButton"
+      >
+        Create Account
+      </button>
 
     </form>
 
     <div id="message"></div>
 
     <div class="login">
-        Already have an account?
-        <a href="login.html">Sign In</a>
+      Already have an account?
+      <a href="login.html">Sign In</a>
     </div>
 
-</div>
+  </div>
 
 
-<script type="module">
+  <script type="module">
 
-import { supabase } from "./supabase.js";
-
-
-const form = document.getElementById("signupForm");
-
-const message = document.getElementById("message");
-
-const signupButton = document.getElementById("signupButton");
+    import { supabase } from "./supabase.js";
 
 
-form.addEventListener("submit", async (event) => {
+    const form =
+      document.getElementById("signupForm");
 
-    event.preventDefault();
+    const message =
+      document.getElementById("message");
+
+    const signupButton =
+      document.getElementById("signupButton");
 
 
-    const name =
+    form.addEventListener("submit", async (event) => {
+
+      event.preventDefault();
+
+
+      const name =
         document.getElementById("name").value.trim();
 
-    const email =
+      const email =
         document.getElementById("email").value.trim();
 
-    const password =
+      const password =
         document.getElementById("password").value;
 
-    const confirm =
+      const confirm =
         document.getElementById("confirm").value;
 
-    const account =
+      const account =
         document.getElementById("account").value;
 
 
-    // Check passwords
-
-    if (password !== confirm) {
-
-        message.textContent =
-            "Passwords do not match.";
-
-        return;
-    }
+      message.textContent = "";
 
 
-    // Check password length
-
-    if (password.length < 6) {
+      if (password !== confirm) {
 
         message.textContent =
-            "Password must be at least 6 characters.";
+          "Passwords do not match.";
 
         return;
-    }
+      }
 
 
-    // Check account type
-
-    if (!account) {
+      if (password.length < 6) {
 
         message.textContent =
-            "Please select an account type.";
+          "Password must be at least 6 characters.";
 
         return;
-    }
+      }
 
 
-    message.textContent =
-        "Creating account...";
+      if (!account) {
 
-    signupButton.disabled = true;
+        message.textContent =
+          "Please select an account type.";
+
+        return;
+      }
 
 
-    try {
+      signupButton.disabled = true;
 
-        /*
-         * IMPORTANT:
-         * This tells Supabase exactly where to send
-         * the user after email confirmation.
-         */
+      signupButton.textContent =
+        "Creating Account...";
 
-        const redirectUrl =
-            window.location.origin + "/dashboard.html";
 
+      try {
 
         const { data, error } =
-            await supabase.auth.signUp({
+          await supabase.auth.signUp({
 
-                email: email,
+            email: email,
 
-                password: password,
+            password: password,
 
-                options: {
+            options: {
 
-                    emailRedirectTo: redirectUrl,
+              data: {
 
-                    data: {
+                full_name: name,
 
-                        full_name: name,
+                account_type: account
 
-                        account_type: account
+              }
 
-                    }
+            }
 
-                }
+          });
 
-            });
-
-
-        // Supabase error
 
         if (error) {
 
-            message.textContent =
-                error.message;
+          message.textContent =
+            error.message;
 
-            signupButton.disabled = false;
+          signupButton.disabled = false;
 
-            return;
+          signupButton.textContent =
+            "Create Account";
+
+          return;
         }
 
 
         /*
          * If email confirmation is disabled,
-         * Supabase creates a session immediately.
+         * Supabase gives us a session immediately.
          */
 
         if (data.session) {
 
-            message.textContent =
-                "Account created! Redirecting...";
+          window.location.href =
+            "dashboard.html";
 
-            window.location.href =
-                "dashboard.html";
-
-            return;
+          return;
         }
 
 
         /*
          * If email confirmation is enabled,
-         * the user needs to check their email.
+         * tell the user to check their email.
          */
 
         message.textContent =
-            "Account created! Please check your email to confirm your account.";
+          "Account created! Please check your email to confirm your account.";
 
         signupButton.disabled = false;
 
+        signupButton.textContent =
+          "Create Account";
 
-    } catch (error) {
+      } catch (err) {
 
         message.textContent =
-            "Something went wrong. Please try again.";
+          "Something went wrong. Please try again.";
 
         signupButton.disabled = false;
 
-        console.error(error);
-    }
+        signupButton.textContent =
+          "Create Account";
 
-});
+      }
 
-</script>
+    });
+
+  </script>
 
 </body>
+
 </html>
