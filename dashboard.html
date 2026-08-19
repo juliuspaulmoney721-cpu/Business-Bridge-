@@ -1,1046 +1,517 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Pixora</title>
+  <title>Business Bridge Dashboard</title>
 
-<style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    background: #000;
-    color: #fff;
-    font-family: Arial, Helvetica, sans-serif;
-    min-height: 100vh;
-}
-
-/* =========================
-   TOP NAVIGATION
-========================= */
-
-.topbar {
-    height: 72px;
-    border-bottom: 1px solid #262626;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 22px;
-    position: sticky;
-    top: 0;
-    background: #000;
-    z-index: 100;
-}
-
-.logo {
-    font-family: Georgia, serif;
-    font-size: 32px;
-    font-weight: bold;
-    color: #d14cff;
-    text-decoration: none;
-}
-
-.nav-icons {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-}
-
-.nav-icons a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 27px;
-}
-
-.profile-small {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #28102f;
-    color: #d14cff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    border: 1px solid #40204c;
-}
-
-/* =========================
-   MAIN
-========================= */
-
-.container {
-    max-width: 680px;
-    margin: auto;
-}
-
-/* =========================
-   STORIES
-========================= */
-
-.stories {
-    display: flex;
-    gap: 20px;
-    padding: 22px 15px;
-    overflow-x: auto;
-    border-bottom: 1px solid #262626;
-    scrollbar-width: none;
-}
-
-.stories::-webkit-scrollbar {
-    display: none;
-}
-
-.story {
-    min-width: 78px;
-    text-align: center;
-}
-
-.story-circle {
-    width: 68px;
-    height: 68px;
-    border-radius: 50%;
-    border: 2px solid #c94cff;
-    margin: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #171017;
-    color: #d14cff;
-    font-size: 21px;
-}
-
-.story-name {
-    display: block;
-    margin-top: 8px;
-    font-size: 12px;
-    color: #ccc;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* =========================
-   CREATE POST
-========================= */
-
-.create {
-    padding: 18px 15px;
-    border-bottom: 1px solid #262626;
-}
-
-.create-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.create-avatar {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background: #28102f;
-    color: #d14cff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-}
-
-.create-input {
-    flex: 1;
-    background: #181818;
-    border: 1px solid #292929;
-    color: #aaa;
-    border-radius: 25px;
-    padding: 13px 17px;
-    text-decoration: none;
-}
-
-.create-input:hover {
-    border-color: #c94cff;
-}
-
-.create-buttons {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 15px;
-}
-
-.create-buttons a {
-    color: #ccc;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-.create-buttons span {
-    color: #c94cff;
-    font-size: 18px;
-    margin-right: 5px;
-}
-
-/* =========================
-   POSTS
-========================= */
-
-.post {
-    border: 1px solid #292929;
-    border-radius: 14px;
-    margin: 18px 15px;
-    overflow: hidden;
-    background: #0b0b0b;
-}
-
-.post-header {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    gap: 12px;
-}
-
-.post-avatar {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background: #28102f;
-    color: #d14cff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-}
-
-.post-user {
-    flex: 1;
-}
-
-.post-user strong {
-    display: block;
-    font-size: 15px;
-}
-
-.post-user small {
-    color: #777;
-    margin-top: 4px;
-    display: block;
-}
-
-.more {
-    font-size: 22px;
-    color: #aaa;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-/* =========================
-   POST IMAGE
-========================= */
-
-.post-image {
-    width: 100%;
-    height: 480px;
-    background:
-        linear-gradient(
-            135deg,
-            #151020,
-            #30103b,
-            #090909
-        );
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #aaa;
-    font-size: 70px;
-    overflow: hidden;
-}
-
-.post-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* =========================
-   POST ACTIONS
-========================= */
-
-.post-actions {
-    display: flex;
-    align-items: center;
-    padding: 13px 15px 5px;
-    gap: 20px;
-}
-
-.action {
-    background: none;
-    border: none;
-    color: #ddd;
-    font-size: 25px;
-    cursor: pointer;
-}
-
-.action:hover {
-    color: #d14cff;
-}
-
-.action.liked {
-    color: #d14cff;
-}
-
-.save {
-    margin-left: auto;
-}
-
-.likes {
-    padding: 5px 15px;
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.caption {
-    padding: 5px 15px 17px;
-    color: #ddd;
-    line-height: 1.5;
-    font-size: 14px;
-}
-
-.comments {
-    padding: 0 15px 18px;
-    color: #777;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-/* =========================
-   MOBILE BOTTOM NAV
-========================= */
-
-.bottom-nav {
-    display: none;
-}
-
-/* =========================
-   DESKTOP
-========================= */
-
-@media (min-width: 768px) {
-
-    .bottom-nav {
-        display: none;
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    .container {
-        padding-bottom: 30px;
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #172b4d;
+      min-height: 100vh;
     }
-}
 
-/* =========================
-   MOBILE
-========================= */
-
-@media (max-width: 767px) {
-
-    .topbar {
-        height: 62px;
-        padding: 0 15px;
+    /* HEADER */
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid #e1e5eb;
+      padding: 18px 25px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     .logo {
-        font-size: 27px;
+      font-size: 25px;
+      font-weight: 700;
+      color: #203e68;
     }
 
-    .nav-icons {
-        gap: 16px;
+    .logout-btn {
+      border: none;
+      background: #203e68;
+      color: white;
+      padding: 11px 18px;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
     }
 
-    .nav-icons a {
-        font-size: 23px;
+    .logout-btn:hover {
+      background: #162f52;
     }
 
-    .profile-small {
-        width: 34px;
-        height: 34px;
+    /* MAIN */
+    main {
+      max-width: 1100px;
+      margin: auto;
+      padding: 30px 20px 100px;
     }
 
-    .container {
-        width: 100%;
-        padding-bottom: 80px;
+    .welcome {
+      background: #203e68;
+      color: white;
+      border-radius: 18px;
+      padding: 30px;
+      margin-bottom: 25px;
     }
 
-    .stories {
-        gap: 17px;
-        padding: 18px 12px;
+    .welcome h1 {
+      font-size: 30px;
+      margin-bottom: 10px;
     }
 
-    .story {
-        min-width: 72px;
+    .welcome p {
+      font-size: 17px;
+      opacity: 0.9;
     }
 
-    .story-circle {
-        width: 62px;
-        height: 62px;
+    /* CARDS */
+    .section-title {
+      font-size: 23px;
+      margin: 28px 0 15px;
     }
 
-    .post {
-        margin: 15px 8px;
-        border-radius: 12px;
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
     }
 
-    .post-image {
-        height: 430px;
+    .card {
+      background: white;
+      border: 1px solid #e1e5eb;
+      border-radius: 15px;
+      padding: 23px;
+      min-height: 160px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.04);
     }
 
-    .create {
-        padding: 15px 10px;
+    .card-icon {
+      font-size: 30px;
+      margin-bottom: 12px;
     }
 
+    .card h3 {
+      font-size: 19px;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      color: #667085;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+
+    .card button {
+      background: #203e68;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+
+    /* ACCOUNT */
+    .account {
+      background: white;
+      border: 1px solid #e1e5eb;
+      border-radius: 15px;
+      padding: 23px;
+      margin-top: 20px;
+    }
+
+    .account-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 13px 0;
+      border-bottom: 1px solid #edf0f4;
+    }
+
+    .account-row:last-child {
+      border-bottom: none;
+    }
+
+    .label {
+      color: #667085;
+    }
+
+    .value {
+      font-weight: 600;
+    }
+
+    /* BOTTOM NAV */
     .bottom-nav {
-        position: fixed;
-        display: flex;
-        left: 8px;
-        right: 8px;
-        bottom: 8px;
-        height: 70px;
-        background: rgba(25, 27, 32, 0.96);
-        border: 1px solid #343842;
-        border-radius: 38px;
-        z-index: 999;
-        align-items: center;
-        justify-content: space-around;
-        box-shadow: 0 5px 30px rgba(0,0,0,.5);
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 5px;
+      z-index: 20;
     }
 
-    .bottom-nav a {
-        color: #fff;
-        text-decoration: none;
-        width: 20%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 3px;
+    .nav-item {
+      text-align: center;
+      color: #667085;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 5px 10px;
     }
 
-    .bottom-nav a span {
-        font-size: 22px;
-        line-height: 1;
+    .nav-item span {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 3px;
     }
 
-    .bottom-nav a small {
-        font-size: 11px;
+    .nav-item.active {
+      color: #203e68;
+      font-weight: bold;
     }
 
-    .bottom-nav a.active {
-        color: #69a9ff;
+    /* LOADING */
+    #loading {
+      text-align: center;
+      padding: 80px 20px;
+      font-size: 18px;
     }
-}
 
-/* =========================
-   MODAL
-========================= */
+    /* MOBILE */
+    @media (max-width: 650px) {
 
-.modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.75);
-    z-index: 2000;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
+      header {
+        padding: 15px 18px;
+      }
 
-.modal.show {
-    display: flex;
-}
+      .logo {
+        font-size: 21px;
+      }
 
-.modal-box {
-    width: 100%;
-    max-width: 500px;
-    background: #151515;
-    border: 1px solid #333;
-    border-radius: 18px;
-    padding: 20px;
-}
+      .logout-btn {
+        padding: 9px 13px;
+        font-size: 13px;
+      }
 
-.modal-box h2 {
-    margin-bottom: 15px;
-}
+      main {
+        padding: 20px 15px 100px;
+      }
 
-.modal-box textarea {
-    width: 100%;
-    min-height: 130px;
-    resize: none;
-    background: #080808;
-    border: 1px solid #333;
-    color: #fff;
-    border-radius: 12px;
-    padding: 12px;
-    outline: none;
-}
+      .welcome {
+        padding: 23px;
+      }
 
-.modal-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 15px;
-}
+      .welcome h1 {
+        font-size: 25px;
+      }
 
-.modal-buttons button {
-    border: none;
-    border-radius: 20px;
-    padding: 10px 18px;
-    cursor: pointer;
-}
+      .cards {
+        grid-template-columns: 1fr;
+      }
 
-.cancel {
-    background: #333;
-    color: #fff;
-}
-
-.publish {
-    background: #c94cff;
-    color: #fff;
-}
-
-/* =========================
-   EMPTY IMAGE
-========================= */
-
-.image-placeholder {
-    text-align: center;
-}
-
-.image-placeholder div {
-    font-size: 70px;
-}
-
-.image-placeholder small {
-    display: block;
-    margin-top: 10px;
-    font-size: 14px;
-    color: #777;
-}
-</style>
+      .account-row {
+        gap: 15px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- =========================
-     TOP NAVIGATION
-========================= -->
+  <header>
+    <div class="logo">Business Bridge</div>
 
-<header class="topbar">
+    <button class="logout-btn" id="logoutBtn">
+      Logout
+    </button>
+  </header>
 
-    <a href="dashboard.html" class="logo">
-        Pixora
-    </a>
+  <div id="loading">
+    Loading your dashboard...
+  </div>
 
-    <nav class="nav-icons">
+  <main id="dashboard" style="display:none;">
 
-        <a href="search.html" aria-label="Search">
-            ⌕
-        </a>
+    <section class="welcome">
+      <h1 id="welcomeTitle">
+        Welcome to Business Bridge
+      </h1>
 
-        <a href="create.html" aria-label="Create">
-            ＋
-        </a>
+      <p>
+        Connect, discover opportunities, and grow your network.
+      </p>
+    </section>
 
-        <a href="chat.html" aria-label="Messages">
-            ♡
-        </a>
+    <h2 class="section-title">
+      What would you like to do?
+    </h2>
 
-        <a href="profile.html" class="profile-small" aria-label="Profile">
-            J
-        </a>
+    <section class="cards">
 
-    </nav>
+      <div class="card">
+        <div class="card-icon">🔎</div>
 
-</header>
+        <h3>Find Opportunities</h3>
 
+        <p>
+          Discover businesses, creators, and opportunities
+          that match your goals.
+        </p>
 
-<main class="container">
-
-<!-- =========================
-     STORIES
-========================= -->
-
-<section class="stories">
-
-    <div class="story">
-        <div class="story-circle">+</div>
-        <span class="story-name">Your story</span>
-    </div>
-
-    <div class="story">
-        <div class="story-circle">A</div>
-        <span class="story-name">Alex</span>
-    </div>
-
-    <div class="story">
-        <div class="story-circle">M</div>
-        <span class="story-name">Maria</span>
-    </div>
-
-    <div class="story">
-        <div class="story-circle">D</div>
-        <span class="story-name">David</span>
-    </div>
-
-    <div class="story">
-        <div class="story-circle">S</div>
-        <span class="story-name">Sarah</span>
-    </div>
-
-    <div class="story">
-        <div class="story-circle">K</div>
-        <span class="story-name">Kevin</span>
-    </div>
-
-</section>
-
-
-<!-- =========================
-     CREATE
-========================= -->
-
-<section class="create">
-
-    <div class="create-row">
-
-        <div class="create-avatar">
-            J
-        </div>
-
-        <a href="create.html" class="create-input">
-            What do you want to share?
-        </a>
-
-    </div>
-
-    <div class="create-buttons">
-
-        <a href="create.html">
-            <span>▣</span>
-            Photo
-        </a>
-
-        <a href="create.html">
-            <span>▶</span>
-            Video
-        </a>
-
-        <a href="create.html">
-            <span>☺</span>
-            Feeling
-        </a>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     POST 1
-========================= -->
-
-<article class="post">
-
-    <div class="post-header">
-
-        <div class="post-avatar">
-            J
-        </div>
-
-        <div class="post-user">
-            <strong>James</strong>
-            <small>Just now</small>
-        </div>
-
-        <button class="more" onclick="showMore(this)">
-            ⋯
+        <button onclick="openSearch()">
+          Explore
         </button>
-
-    </div>
-
-
-    <div class="post-image">
-
-        <div class="image-placeholder">
-            <div>✦</div>
-            <small>Pixora</small>
-        </div>
-
-    </div>
+      </div>
 
 
-    <div class="post-actions">
+      <div class="card">
+        <div class="card-icon">🤝</div>
 
-        <button class="action like-button"
-                onclick="toggleLike(this)">
-            ♡
+        <h3>Build Connections</h3>
+
+        <p>
+          Connect with people and businesses and build
+          valuable professional relationships.
+        </p>
+
+        <button onclick="showComingSoon()">
+          Connect
         </button>
+      </div>
 
-        <button class="action">
-            ♧
+
+      <div class="card">
+        <div class="card-icon">💬</div>
+
+        <h3>Messages</h3>
+
+        <p>
+          Communicate with your connections and manage
+          your conversations.
+        </p>
+
+        <button onclick="showComingSoon()">
+          Open Messages
         </button>
+      </div>
 
-        <button class="action">
-            ✈
+
+      <div class="card">
+        <div class="card-icon">👤</div>
+
+        <h3>Your Profile</h3>
+
+        <p>
+          Manage your Business Bridge profile and account
+          information.
+        </p>
+
+        <button onclick="showComingSoon()">
+          View Profile
         </button>
+      </div>
 
-        <button class="action save">
-            ♧
-        </button>
+    </section>
 
+
+    <h2 class="section-title">
+      Your Account
+    </h2>
+
+    <section class="account">
+
+      <div class="account-row">
+        <span class="label">Name</span>
+        <span class="value" id="userName">Loading...</span>
+      </div>
+
+      <div class="account-row">
+        <span class="label">Email</span>
+        <span class="value" id="userEmail">Loading...</span>
+      </div>
+
+      <div class="account-row">
+        <span class="label">Account Type</span>
+        <span class="value" id="accountType">Loading...</span>
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- BOTTOM NAVIGATION -->
+
+  <nav class="bottom-nav">
+
+    <div class="nav-item active" onclick="goHome()">
+      <span>🏠</span>
+      Home
     </div>
 
-    <div class="likes">
-        <span class="like-count">0</span> likes
+    <div class="nav-item" onclick="openSearch()">
+      <span>🔎</span>
+      Search
     </div>
 
-    <div class="caption">
-        <strong>James</strong>
-        Welcome to Pixora. Share your moments, connect with people, and discover something new.
+    <div class="nav-item" onclick="showComingSoon()">
+      <span>🤝</span>
+      Connect
     </div>
 
-    <div class="comments">
-        View all comments
+    <div class="nav-item" onclick="showComingSoon()">
+      <span>💬</span>
+      Messages
     </div>
 
-</article>
-
-
-<!-- =========================
-     POST 2
-========================= -->
-
-<article class="post">
-
-    <div class="post-header">
-
-        <div class="post-avatar">
-            P
-        </div>
-
-        <div class="post-user">
-            <strong>Pixora</strong>
-            <small>Today</small>
-        </div>
-
-        <button class="more" onclick="showMore(this)">
-            ⋯
-        </button>
-
+    <div class="nav-item" onclick="showComingSoon()">
+      <span>👤</span>
+      Profile
     </div>
 
+  </nav>
 
-    <div class="post-image">
-        <div class="image-placeholder">
-            <div>✦</div>
-            <small>Create something beautiful</small>
-        </div>
-    </div>
 
+  <script type="module">
 
-    <div class="post-actions">
+    import { supabase } from "./supabase.js";
 
-        <button class="action like-button"
-                onclick="toggleLike(this)">
-            ♡
-        </button>
 
-        <button class="action">
-            ♧
-        </button>
+    /* CHECK LOGIN */
 
-        <button class="action">
-            ✈
-        </button>
+    async function loadDashboard() {
 
-        <button class="action save">
-            ♧
-        </button>
+      const {
+        data: { session }
+      } = await supabase.auth.getSession();
 
-    </div>
 
-    <div class="likes">
-        <span class="like-count">0</span> likes
-    </div>
+      if (!session) {
 
-    <div class="caption">
-        <strong>Pixora</strong>
-        Your space to create, share and connect.
-    </div>
+        window.location.href = "login.html";
 
-    <div class="comments">
-        View all comments
-    </div>
-
-</article>
-
-</main>
-
-
-<!-- =========================
-     MOBILE BOTTOM NAV
-========================= -->
-
-<nav class="bottom-nav">
-
-    <a href="dashboard.html" class="active">
-        <span>⌂</span>
-        <small>Home</small>
-    </a>
-
-    <a href="search.html">
-        <span>⌕</span>
-        <small>Search</small>
-    </a>
-
-    <a href="create.html">
-        <span>⊞</span>
-        <small>Create</small>
-    </a>
-
-    <a href="chat.html">
-        <span>□</span>
-        <small>Messages</small>
-    </a>
-
-    <a href="profile.html">
-        <span>●</span>
-        <small>Profile</small>
-    </a>
-
-</nav>
-
-
-<!-- =========================
-     CREATE MODAL
-========================= -->
-
-<div class="modal" id="createModal">
-
-    <div class="modal-box">
-
-        <h2>Create a post</h2>
-
-        <textarea
-            id="postText"
-            placeholder="Write something..."></textarea>
-
-        <div class="modal-buttons">
-
-            <button
-                class="cancel"
-                onclick="closeModal()">
-                Cancel
-            </button>
-
-            <button
-                class="publish"
-                onclick="publishPost()">
-                Publish
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<script>
-
-/* =========================
-   LIKE SYSTEM
-========================= */
-
-function toggleLike(button) {
-
-    const post = button.closest(".post");
-    const countElement = post.querySelector(".like-count");
-
-    let count = parseInt(countElement.textContent) || 0;
-
-    if (button.classList.contains("liked")) {
-
-        button.classList.remove("liked");
-        button.textContent = "♡";
-
-        count = Math.max(0, count - 1);
-
-    } else {
-
-        button.classList.add("liked");
-        button.textContent = "♥";
-
-        count++;
-
-    }
-
-    countElement.textContent = count;
-}
-
-
-/* =========================
-   MORE BUTTON
-========================= */
-
-function showMore(button) {
-
-    const options = [
-        "Save post",
-        "Share post",
-        "Report post",
-        "Cancel"
-    ];
-
-    const choice = prompt(
-        "Pixora options:\n\n" +
-        "1. Save post\n" +
-        "2. Share post\n" +
-        "3. Report post\n" +
-        "4. Cancel"
-    );
-
-    if (choice === "1") {
-        alert("Post saved.");
-    }
-
-    if (choice === "2") {
-        alert("Share link copied.");
-    }
-
-    if (choice === "3") {
-        alert("Thank you. The post has been reported.");
-    }
-}
-
-
-/* =========================
-   CREATE MODAL
-========================= */
-
-function openModal() {
-
-    const modal = document.getElementById("createModal");
-
-    if (modal) {
-        modal.classList.add("show");
-    }
-}
-
-function closeModal() {
-
-    const modal = document.getElementById("createModal");
-
-    if (modal) {
-        modal.classList.remove("show");
-    }
-}
-
-function publishPost() {
-
-    const text = document.getElementById("postText").value.trim();
-
-    if (!text) {
-        alert("Please write something first.");
         return;
+      }
+
+
+      const user = session.user;
+
+
+      /* USER INFORMATION */
+
+      const metadata = user.user_metadata || {};
+
+
+      const name =
+        metadata.full_name ||
+        metadata.name ||
+        "Business Bridge User";
+
+
+      const account =
+        metadata.account_type ||
+        "Member";
+
+
+      document.getElementById("welcomeTitle").textContent =
+        "Welcome, " + name + "!";
+
+
+      document.getElementById("userName").textContent =
+        name;
+
+
+      document.getElementById("userEmail").textContent =
+        user.email || "Not available";
+
+
+      document.getElementById("accountType").textContent =
+        account;
+
+
+      document.getElementById("loading").style.display =
+        "none";
+
+
+      document.getElementById("dashboard").style.display =
+        "block";
     }
 
-    alert("Your post has been created.");
 
-    document.getElementById("postText").value = "";
+    /* LOGOUT */
 
-    closeModal();
-}
+    document
+      .getElementById("logoutBtn")
+      .addEventListener("click", async () => {
+
+        const { error } = await supabase.auth.signOut();
 
 
-/* =========================
-   STORY CLICK
-========================= */
+        if (error) {
 
-document.querySelectorAll(".story").forEach(function(story) {
+          alert(error.message);
 
-    story.addEventListener("click", function() {
-
-        const name = story.querySelector(".story-name");
-
-        if (name) {
-            alert("Opening " + name.textContent + " story...");
+          return;
         }
 
+
+        window.location.href = "login.html";
+
+      });
+
+
+    /* START */
+
+    loadDashboard();
+
+
+    /* Listen for login/logout changes */
+
+    supabase.auth.onAuthStateChange((event, session) => {
+
+      if (event === "SIGNED_OUT") {
+
+        window.location.href = "login.html";
+
+      }
+
     });
 
-});
+  </script>
 
 
-/* =========================
-   CREATE INPUT
-========================= */
+  <script>
 
-document.querySelector(".create-input").addEventListener(
-    "click",
-    function() {
-        // Allows the normal create.html navigation.
+    function openSearch() {
+      window.location.href = "search.html";
     }
-);
 
 
-/* =========================
-   IMAGE ERROR PROTECTION
-========================= */
-
-document.querySelectorAll(".post-image img").forEach(function(img) {
-
-    img.addEventListener("error", function() {
-
-        this.style.display = "none";
-
-        const placeholder = document.createElement("div");
-
-        placeholder.className = "image-placeholder";
-
-        placeholder.innerHTML =
-            "<div>✦</div>" +
-            "<small>Pixora</small>";
-
-        this.parentElement.appendChild(placeholder);
-
-    });
-
-});
+    function goHome() {
+      window.location.href = "dashboard.html";
+    }
 
 
-/* =========================
-   MOBILE NAV ACTIVE STATE
-========================= */
+    function showComingSoon() {
+      alert("This Business Bridge feature is coming soon.");
+    }
 
-document.querySelectorAll(".bottom-nav a").forEach(function(link) {
-
-    link.addEventListener("click", function() {
-
-        document.querySelectorAll(".bottom-nav a")
-            .forEach(function(item) {
-                item.classList.remove("active");
-            });
-
-        this.classList.add("active");
-
-    });
-
-});
-
-</script>
+  </script>
 
 </body>
 </html>
