@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Search - Business Bridge</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #000;
+      color: #fff;
+      min-height: 100vh;
+      padding-bottom: 110px;
+    }
+
+    .topbar {
+      height: 72px;
+      border-bottom: 1px solid #292929;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      position: sticky;
+      top: 0;
+      background: #000;
+      z-index: 100;
+    }
+
+    .back {
+      color: #fff;
+      text-decoration: none;
+      font-size: 36px;
+      line-height: 1;
+    }
+
+    .logo {
+      color: #d946ff;
+      font-size: 27px;
+      font-weight: 800;
+      font-family: Georgia, serif;
+    }
+
+    .bb {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: #210b2d;
+      border: 1px solid #54206b;
+      color: #d946ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .container {
+      padding: 28px 32px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h1 {
+      font-size: 38px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #999;
+      font-size: 18px;
+      margin-bottom: 25px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: #171717;
+      border: 1px solid #343434;
+      border-radius: 18px;
+      padding: 0 16px;
+      height: 62px;
+      margin-bottom: 30px;
+    }
+
+    .search-icon {
+      font-size: 25px;
+      margin-right: 12px;
+      color: #aaa;
+    }
+
+    #searchInput {
+      flex: 1;
+      height: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: #fff;
+      font-size: 18px;
+    }
+
+    #searchInput::placeholder {
+      color: #777;
+    }
+
+    .section-title {
+      font-size: 21px;
+      margin-bottom: 15px;
+    }
+
+    .categories {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 28px;
+    }
+
+    .category {
+      white-space: nowrap;
+      border: 1px solid #4a1d5a;
+      background: #210b2d;
+      color: #d946ff;
+      padding: 11px 17px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .category:hover {
+      background: #32103f;
+    }
+
+    .results {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .result {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: #111;
+      border: 1px solid #292929;
+      border-radius: 17px;
+      padding: 16px;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .result:hover {
+      border-color: #d946ff;
+    }
+
+    .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #260d31;
+      color: #d946ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .result-info {
+      flex: 1;
+    }
+
+    .result-name {
+      font-size: 17px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .result-description {
+      color: #999;
+      font-size: 14px;
+    }
+
+    .arrow {
+      color: #777;
+      font-size: 25px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 45px 20px;
+      color: #777;
+      display: none;
+    }
+
+    .empty-icon {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 18px;
+      left: 32px;
+      right: 32px;
+      height: 88px;
+      background: #181a20;
+      border: 1px solid #383b43;
+      border-radius: 45px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 200;
+    }
+
+    .nav-item {
+      text-decoration: none;
+      color: #aaa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+    }
+
+    .nav-icon {
+      font-size: 27px;
+    }
+
+    .nav-item.active {
+      color: #d946ff;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 25px 20px;
+      }
+
+      .bottom-nav {
+        left: 18px;
+        right: 18px;
+      }
+
+      .logo {
+        font-size: 24px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+
+    <a href="index.html" class="back">‹</a>
+
+    <div class="logo">Business Bridge</div>
+
+    <div class="bb">BB</div>
+
+  </div>
+
+
+  <!-- MAIN CONTENT -->
+  <main class="container">
+
+    <h1>Search</h1>
+
+    <p class="subtitle">
+      Find people, businesses, creators and opportunities.
+    </p>
+
+
+    <!-- SEARCH INPUT -->
+    <div class="search-box">
+
+      <span class="search-icon">🔍</span>
+
+      <input
+        type="search"
+        id="searchInput"
+        placeholder="Search Business Bridge..."
+        autocomplete="off"
+      >
+
+    </div>
+
+
+    <!-- CATEGORIES -->
+    <h2 class="section-title">Explore</h2>
+
+    <div class="categories">
+
+      <button class="category" onclick="searchCategory('Business')">
+        💼 Business
+      </button>
+
+      <button class="category" onclick="searchCategory('Creator')">
+        🎨 Creators
+      </button>
+
+      <button class="category" onclick="searchCategory('Student')">
+        🎓 Students
+      </button>
+
+      <button class="category" onclick="searchCategory('Marketing')">
+        📣 Marketing
+      </button>
+
+      <button class="category" onclick="searchCategory('Technology')">
+        💻 Technology
+      </button>
+
+    </div>
+
+
+    <!-- RESULTS -->
+    <h2 class="section-title">People & Opportunities</h2>
+
+    <div class="results" id="results">
+
+      <a href="business.html" class="result">
+        <div class="avatar">B</div>
+
+        <div class="result-info">
+          <div class="result-name">Business</div>
+          <div class="result-description">
+            Discover businesses and opportunities.
+          </div>
+        </div>
+
+        <div class="arrow">›</div>
+      </a>
+
+
+      <a href="creators.html" class="result">
+        <div class="avatar">C</div>
+
+        <div class="result-info">
+          <div class="result-name">Creators</div>
+          <div class="result-description">
+            Connect with creators and creative professionals.
+          </div>
+        </div>
+
+        <div class="arrow">›</div>
+      </a>
+
+
+      <a href="students.html" class="result">
+        <div class="avatar">S</div>
+
+        <div class="result-info">
+          <div class="result-name">Students</div>
+          <div class="result-description">
+            Find students, skills and collaboration opportunities.
+          </div>
+        </div>
+
+        <div class="arrow">›</div>
+      </a>
+
+    </div>
+
+
+    <div class="empty" id="empty">
+
+      <div class="empty-icon">🔎</div>
+
+      <div>No results found.</div>
+
+    </div>
+
+  </main>
+
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav">
+
+    <a href="index.html" class="nav-item">
+      <span class="nav-icon">🏠</span>
+      <span>Home</span>
+    </a>
+
+    <a href="chat.html" class="nav-item">
+      <span class="nav-icon">💬</span>
+      <span>Inbox</span>
+    </a>
+
+    <a href="search.html" class="nav-item active">
+      <span class="nav-icon">🔍</span>
+      <span>Explore</span>
+    </a>
+
+    <a href="profile.html" class="nav-item">
+      <span class="nav-icon">👤</span>
+      <span>Profile</span>
+    </a>
+
+  </nav>
+
+
+  <script>
+
+    const searchInput = document.getElementById("searchInput");
+    const results = document.getElementById("results");
+    const empty = document.getElementById("empty");
+
+    searchInput.addEventListener("input", function () {
+
+      const search = this.value.toLowerCase().trim();
+
+      const items = results.querySelectorAll(".result");
+
+      let found = false;
+
+      items.forEach(function(item) {
+
+        const text = item.innerText.toLowerCase();
+
+        if (text.includes(search)) {
+
+          item.style.display = "flex";
+          found = true;
+
+        } else {
+
+          item.style.display = "none";
+
+        }
+
+      });
+
+      if (!found && search !== "") {
+
+        empty.style.display = "block";
+
+      } else {
+
+        empty.style.display = "none";
+
+      }
+
+    });
+
+
+    function searchCategory(category) {
+
+      searchInput.value = category;
+
+      searchInput.dispatchEvent(new Event("input"));
+
+    }
+
+  </script>
+
+</body>
+</html>
