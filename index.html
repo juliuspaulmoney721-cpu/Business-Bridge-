@@ -7,150 +7,354 @@
 
 <style>
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
 body{
-background:#f5f7fa;
-color:#333;
+  background:#050505;
+  color:white;
+  font-family:Arial,sans-serif;
+  padding-bottom:75px;
 }
 
-nav{
-background:#12355b;
-padding:15px;
-display:flex;
-justify-content:center;
-flex-wrap:wrap;
+.topbar{
+  height:70px;
+  background:#050505;
+  border-bottom:1px solid #292929;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 18px;
+  position:sticky;
+  top:0;
+  z-index:20;
 }
 
-nav a{
-color:white;
-text-decoration:none;
-margin:10px;
-font-weight:bold;
+.logo{
+  font-size:27px;
+  font-weight:bold;
+  color:#c34cff;
 }
 
-.hero{
-background:linear-gradient(135deg,#12355b,#1d5d91);
-color:white;
-padding:80px 20px;
-text-align:center;
+.logo span{
+  color:white;
 }
 
-.hero h1{
-font-size:48px;
-margin-bottom:20px;
+.nav{
+  display:flex;
+  gap:22px;
+  align-items:center;
 }
 
-.hero p{
-font-size:20px;
-margin-bottom:30px;
+.nav a{
+  color:white;
+  text-decoration:none;
+  font-size:22px;
 }
 
-.hero button{
-padding:15px 30px;
-font-size:18px;
-border:none;
-border-radius:8px;
-background:white;
-color:#12355b;
-cursor:pointer;
+.profile{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#24102f;
+  color:#d35cff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
 }
 
-.features{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:20px;
-padding:40px;
+.story-area{
+  padding:22px 18px;
+  border-bottom:1px solid #222;
 }
 
-.card{
-background:white;
-padding:25px;
-border-radius:12px;
-box-shadow:0 5px 15px rgba(0,0,0,.1);
-text-align:center;
+.story{
+  width:75px;
+  text-align:center;
 }
 
-.card h2{
-color:#12355b;
-margin-bottom:10px;
+.story-circle{
+  width:68px;
+  height:68px;
+  border-radius:50%;
+  border:3px solid #b63cff;
+  background:#160c1c;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:25px;
+  margin:auto;
 }
 
-.card a{
-display:inline-block;
-margin-top:15px;
-padding:10px 20px;
-background:#12355b;
-color:white;
-text-decoration:none;
-border-radius:6px;
+.story p{
+  margin-top:8px;
+  font-size:13px;
+  color:#ccc;
 }
 
-footer{
-background:#12355b;
-color:white;
-text-align:center;
-padding:20px;
-margin-top:40px;
+.feed{
+  max-width:650px;
+  margin:auto;
+}
+
+.post{
+  border-bottom:1px solid #252525;
+  background:#080808;
+}
+
+.post-header{
+  display:flex;
+  align-items:center;
+  padding:17px;
+  gap:12px;
+}
+
+.avatar{
+  width:43px;
+  height:43px;
+  border-radius:50%;
+  background:#24102f;
+  color:#c34cff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+}
+
+.post-name{
+  font-weight:bold;
+}
+
+.post-time{
+  color:#777;
+  font-size:12px;
+  margin-top:3px;
+}
+
+.post-image{
+  width:100%;
+  height:390px;
+  background:linear-gradient(135deg,#170b21,#492064,#0b0b0b);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:30px;
+}
+
+.post-image h1{
+  font-size:42px;
+  color:white;
+}
+
+.post-image p{
+  color:#ddd;
+  margin-top:10px;
+}
+
+.actions{
+  display:flex;
+  gap:25px;
+  padding:15px 18px 8px;
+  font-size:25px;
+}
+
+.caption{
+  padding:0 18px 18px;
+  color:#ddd;
+}
+
+.caption b{
+  color:white;
+}
+
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:68px;
+  background:#090909;
+  border-top:1px solid #292929;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  z-index:30;
+}
+
+.bottom-nav a{
+  text-decoration:none;
+  color:#aaa;
+  text-align:center;
+  font-size:23px;
+}
+
+.bottom-nav span{
+  display:block;
+  font-size:10px;
+  margin-top:3px;
+}
+
+.bottom-nav .active{
+  color:#c34cff;
+}
+
+.create{
+  width:42px;
+  height:42px;
+  border:1px solid #555;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+@media(max-width:600px){
+  .nav a:nth-child(1),
+  .nav a:nth-child(2){
+    display:none;
+  }
+
+  .post-image{
+    height:340px;
+  }
+
+  .post-image h1{
+    font-size:34px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<nav>
-<a href="index.html">Home</a>
-<a href="creators.html">Creators</a>
-<a href="students.html">Students</a>
-<a href="business.html">Business</a>
-<a href="ai.html">AI Assistant</a>
-<a href="login.html">Login</a>
-</nav>
+<header class="topbar">
 
-<section class="hero">
-<h1>Business Bridge</h1>
-<p>Helping Creators, Students and Businesses succeed with AI.</p>
+  <div class="logo">
+    Business<span>Bridge</span>
+  </div>
 
-<button onclick="location.href='login.html'">
-Get Started
-</button>
-</section>
+  <nav class="nav">
+    <a href="index.html">⌂</a>
+    <a href="creators.html">⌕</a>
+    <a href="chat.html">▢</a>
+    <a href="login.html">J</a>
+  </nav>
 
-<section class="features">
+  <div class="profile">J</div>
 
-<div class="card">
-<h2>Creators</h2>
-<p>Grow your audience and build your business.</p>
-<a href="creators.html">Open</a>
-</div>
+</header>
 
-<div class="card">
-<h2>Students</h2>
-<p>Learn new skills and prepare for your future.</p>
-<a href="students.html">Open</a>
-</div>
+<section class="story-area">
 
-<div class="card">
-<h2>Business</h2>
-<p>Connect with talented people and opportunities.</p>
-<a href="business.html">Open</a>
-</div>
-
-<div class="card">
-<h2>AI Assistant</h2>
-<p>Ask questions and get intelligent business help.</p>
-<a href="ai.html">Open</a>
-</div>
+  <div class="story">
+    <div class="story-circle">J+</div>
+    <p>Your story</p>
+  </div>
 
 </section>
 
-<footer>
+<main class="feed">
 
-© 2026 Business Bridge. All Rights Reserved.
+  <article class="post">
+
+    <div class="post-header">
+
+      <div class="avatar">BB</div>
+
+      <div>
+        <div class="post-name">Business Bridge</div>
+        <div class="post-time">Welcome to Business Bridge</div>
+      </div>
+
+    </div>
+
+    <div class="post-image">
+      <div>
+        <h1>BUSINESS<br>BRIDGE</h1>
+        <p>Connect • Create • Learn • Grow</p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <span>♡</span>
+      <span>♡</span>
+      <span>↗</span>
+    </div>
+
+    <div class="caption">
+      <b>Business Bridge</b>
+      — Helping creators, students and businesses connect, learn and grow with AI.
+    </div>
+
+  </article>
+
+
+  <article class="post">
+
+    <div class="post-header">
+
+      <div class="avatar">AI</div>
+
+      <div>
+        <div class="post-name">Business Bridge AI</div>
+        <div class="post-time">AI Assistant</div>
+      </div>
+
+    </div>
+
+    <div class="post-image">
+      <div>
+        <h1>🤖 AI<br>ASSISTANT</h1>
+        <p>Your intelligent business companion</p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <span>♡</span>
+      <span>💬</span>
+      <span>↗</span>
+    </div>
+
+    <div class="caption">
+      <b>Business Bridge AI</b>
+      — Get help with ideas, business, learning and your projects.
+    </div>
+
+  </article>
+
+</main>
+
+
+<footer class="bottom-nav">
+
+  <a href="index.html" class="active">
+    ⌂
+    <span>Home</span>
+  </a>
+
+  <a href="creators.html">
+    ⌕
+    <span>Search</span>
+  </a>
+
+  <a href="creators.html">
+    <div class="create">＋</div>
+    <span>Create</span>
+  </a>
+
+  <a href="chat.html">
+    ♡
+    <span>Messages</span>
+  </a>
+
+  <a href="login.html">
+    ◉
+    <span>Profile</span>
+  </a>
 
 </footer>
 
