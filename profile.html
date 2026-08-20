@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#ffffff"><title>Profile — Business Bridge</title><link rel="stylesheet" href="styles.css">
+<meta name="theme-color" content="#ffffff"><title>Profile — Business Bridge</title><link rel="stylesheet" href="styles.css"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#a83cff"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Business Bridge">
 <style>
 .profile-page{max-width:760px;margin:0 auto;padding-bottom:24px}
 .profile-cover{height:96px;background:linear-gradient(100deg,#f4dcff,#ffe9e2);position:relative;border-bottom:1px solid #eee}
@@ -52,4 +52,4 @@
 <div class="no-posts"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 5v14M15 5v14M5 9h14M5 15h14" stroke="currentColor" stroke-width="1.6"/></svg><div>No posts yet</div></div>
 </section></main>
 <nav class="bottom-nav"><a href="dashboard.html"><span>⌂</span>Home</a><a href="search.html"><span>⌕</span>Search</a><a href="create.html"><span>⊞</span>Create</a><a href="messages.html"><span>▢</span>Messages</a><a class="active" href="profile.html"><span>♙</span>Profile</a></nav>
-</body></html>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));}</script></body></html>

@@ -1,0 +1,12 @@
+{
+  "name": "business-bridge--main",
+  "version": "1.0.0",
+  "main": "supabase.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

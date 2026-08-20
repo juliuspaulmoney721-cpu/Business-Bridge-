@@ -1,0 +1,11 @@
+{
+  "name":"Business Bridge",
+  "short_name":"Business Bridge",
+  "start_url":"dashboard.html",
+  "display":"standalone",
+  "background_color":"#ffffff",
+  "theme_color":"#a83cff",
+  "orientation":"portrait-primary",
+  "description":"Business Bridge — connect, discover and grow your network.",
+  "icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}

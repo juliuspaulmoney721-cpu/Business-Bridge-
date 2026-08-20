@@ -1,17 +1,21 @@
-BUSINESS BRIDGE — PIXORA-STYLE UI UPDATE
+BUSINESS BRIDGE — REAL APP PACKAGE
 
-This folder replaces the old blue Business Bridge pages with the white, purple-accented social-app layout shown in the reference screenshots.
+This package contains the latest Business Bridge social-app UI from the uploaded project, including Home/feed, Search, Create, Messages, Notifications, Profile and Connect pages.
 
-Main pages:
-- dashboard.html — Home/feed
-- search.html — Search
-- create.html — Create post
-- messages.html — Messages
-- notifications.html — Notifications
-- profile.html — Profile
-- connect.html — Connections
-- login.html / signup.html — Authentication screens
+It is prepared as an installable Progressive Web App (PWA):
+- manifest.json provides the app identity and standalone display.
+- sw.js provides offline caching for the app shell.
+- The existing Supabase configuration is retained.
+- The “Built with Hercules” badge is not included.
 
-The interface uses only local HTML/CSS/JS and keeps the existing supabase.js file. Replace the HTML files and styles.css in your repository, then publish to GitHub Pages.
+INSTALL ON IPHONE/iPAD:
+1. Host this folder on HTTPS (GitHub Pages, Netlify, Vercel, etc.).
+2. Open the site in Safari.
+3. Tap Share -> Add to Home Screen.
+4. Launch Business Bridge from the Home Screen; it opens as a standalone app.
 
-The design intentionally does NOT include the “Built with Hercules” badge.
+ANDROID:
+Open the HTTPS site in Chrome and use Install app / Add to Home screen when offered.
+
+NATIVE APK/IPA:
+A native Android/iOS build still requires a platform build environment (Android SDK/Gradle for APK/AAB; Xcode/macOS for iOS). This package is ready to be wrapped with Capacitor when that build environment is available.
