@@ -1,26 +1,197 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#fff"><title>Pixora — Home</title><link rel="stylesheet" href="styles.css"><link rel="manifest" href="manifest.json"><style>svg{width:26px;height:26px;display:block}.feed-empty{padding:70px 20px;text-align:center;color:#777}.feed-empty h2{color:#111}.story-avatar{width:70px;height:70px;border-radius:50%;object-fit:cover}.post-avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;background:#f0e5ff}.comment-list{padding:0 18px 12px}.comment{padding:7px 0;line-height:1.4}.comment b{margin-right:5px}.comment-form{display:flex;gap:8px;border-top:1px solid #eee;padding:12px 18px}.comment-form input{flex:1;border:0;background:#f5f5f6;border-radius:20px;padding:10px 14px;outline:0}.comment-form button{background:#a83cff;color:#fff;border-radius:20px;padding:9px 14px}.post-menu{margin-left:auto;background:none;font-size:22px;color:#777}.save-btn.saved{color:#a83cff}.post-head{padding:14px 16px}.post-body{padding:8px 16px 12px}.post-actions button{font-size:27px}.post-actions .spacer{flex:1}</style></head><body>
-<header class="topbar"><a class="brand" href="dashboard.html">Pixora</a><nav class="topnav"><a class="active" href="dashboard.html" title="Home">⌂</a><a href="search.html" title="Search">⌕</a><a href="create.html" title="Create">＋</a><a href="messages.html" title="Messages">♡</a><a href="notifications.html" title="Notifications">♧</a></nav><a class="avatar" id="headerAvatar" href="profile.html">J</a></header>
-<main class="container"><section class="stories" id="stories"></section><div id="feed"></div></main>
-<nav class="bottom-nav"><a class="active" href="dashboard.html"><span>⌂</span>Home</a><a href="search.html"><span>⌕</span>Search</a><a href="create.html"><span>＋</span>Create</a><a href="messages.html"><span>♡</span>Messages</a><a href="profile.html"><span>◯</span>Profile</a></nav>
-<div class="modal" id="commentsModal"><div class="sheet"><h2>Comments</h2><div id="comments"></div><div class="comment-form"><input id="commentInput" placeholder="Add a comment..."><button id="commentSend">Post</button></div><button class="btn secondary full" onclick="closeComments()">Close</button></div></div>
-<script src="pixora-data.js"></script><script>
-const key='bb_posts', commentsKey='pixora_comments', savedKey='pixora_saved';
-let posts=PixoraData.migratePosts(); let activeComment=-1;
-function getProfile(){return PixoraData.me()}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function initials(n){return (String(n||'?').trim()[0]||'?').toUpperCase()}
-function avatar(p,cls='post-avatar'){return p.avatar?`<img class="${cls}" src="${esc(p.avatar)}" alt="Profile picture">`:`<div class="${cls}">${esc(initials(p.name||p.user))}</div>`}
-function savePosts(){localStorage.setItem(key,JSON.stringify(posts))}
-function renderHeader(){const p=getProfile();document.getElementById('headerAvatar').innerHTML=p.avatar?`<img class="topbar-avatar" src="${esc(p.avatar)}" alt="Profile">`:initials(p.name);document.getElementById('headerAvatar').style.padding='0'}
-function renderStories(){const p=getProfile();const stories=JSON.parse(localStorage.getItem('pixora_stories')||'[]').filter(s=>Date.now()-s.created<86400000);document.getElementById('stories').innerHTML=`<a class="story add" href="create.html?story=1"><div class="story-ring"><div class="story-inner">${p.avatar?`<img class="story-avatar" src="${esc(p.avatar)}">`:initials(p.name)}</div></div><div>Your story</div></a>`+stories.map(s=>`<a class="story" href="create.html?viewStory=${s.id}"><div class="story-ring"><div class="story-inner">${s.avatar?`<img class="story-avatar" src="${esc(s.avatar)}">`:initials(s.user)}</div></div><div>${esc(s.user)}</div></a>`).join('')}
-function commentsFor(i){return (JSON.parse(localStorage.getItem(commentsKey)||'{}')[i]||[])}
-function render(){posts=PixoraData.migratePosts();renderHeader();renderStories();const me=getProfile();const saved=new Set(JSON.parse(localStorage.getItem(savedKey)||'[]'));document.getElementById('feed').innerHTML=posts.length?posts.map((p,i)=>{const cs=commentsFor(i);const liked=(p.likedBy||[]).includes(me.username);return `<article class="post"><div class="post-head">${avatar({name:p.user,avatar:p.avatar})}<div><div class="post-user">${esc(p.user)}</div><div class="post-time">${esc(p.time||'')}</div></div><button class="post-menu" onclick="postMenu(${i})">•••</button></div><div class="post-media">${p.image?`<img src="${esc(p.image)}" alt="Post image">`:`<div style="font-size:90px">${esc(p.emoji||'✦')}</div>`}</div><div class="post-body"><div class="post-actions"><button class="${liked?'liked':''}" onclick="likePost(${i})">${liked?'♥':'♡'}</button><button onclick="openComments(${i})">◯</button><button onclick="sharePost(${i})">↗</button><span class="spacer"></span><button class="save-btn ${saved.has(String(p.id))?'saved':''}" onclick="savePost(${i})">${saved.has(String(p.id))?'▣':'□'}</button></div><div class="likes">${p.likes||0} like${(p.likes||0)==1?'':'s'}</div>${p.text?`<div class="caption"><b>${esc(p.user)}</b> ${esc(p.text)}</div>`:''}${cs.length?`<button style="background:none;color:#777;padding:8px 0" onclick="openComments(${i})">View all ${cs.length} comment${cs.length==1?'':'s'}</button>`:''}</div></article>`}).join(''):`<div class="feed-empty"><div class="empty-icon">✦</div><h2>Your feed is empty</h2><p>Create your first post and start building your Pixora community.</p><br><a class="btn accent" href="create.html">Create a post</a></div>`}
-function likePost(i){PixoraData.setPostLike(posts[i].id,getProfile().username);render()}
-function savePost(i){let s=new Set(JSON.parse(localStorage.getItem(savedKey)||'[]').map(String)),id=String(posts[i].id);s.has(id)?s.delete(id):s.add(id);localStorage.setItem(savedKey,JSON.stringify([...s]));render()}
-function sharePost(i){const p=posts[i],text=`${p.user} on Pixora: ${p.text||''}`;if(navigator.share)navigator.share({title:'Pixora',text}).catch(()=>{});else if(navigator.clipboard)navigator.clipboard.writeText(text).then(()=>alert('Post text copied.'))}
-function postMenu(i){const me=getProfile();if(posts[i].username!==me.username){alert('You can only manage your own posts.');return}if(confirm('Delete this post?')){posts.splice(i,1);savePosts();render()}}
-function openComments(i){activeComment=i;const list=commentsFor(i);document.getElementById('comments').innerHTML=list.length?list.map(c=>`<div class="comment"><b>${esc(c.user)}</b>${esc(c.text)}</div>`).join(''):'<div class="muted" style="padding:15px 0">No comments yet.</div>';document.getElementById('commentsModal').classList.add('open')}
-function closeComments(){document.getElementById('commentsModal').classList.remove('open')}
-document.getElementById('commentSend').onclick=()=>{const input=document.getElementById('commentInput'),text=input.value.trim();if(!text||activeComment<0)return;const all=JSON.parse(localStorage.getItem(commentsKey)||'{}');all[activeComment]=all[activeComment]||[];const p=posts[activeComment];all[activeComment].push({user:getProfile().name,username:getProfile().username,text,created:Date.now(),postId:p?.id});localStorage.setItem(commentsKey,JSON.stringify(all));input.value='';openComments(activeComment);render()}
-document.getElementById('commentInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('commentSend').click()});render();if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Bridge Dashboard</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f7fc;
+}
+
+header{
+background:#12355b;
+color:white;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px;
+}
+
+header h1{
+font-size:28px;
+}
+
+.logout{
+background:white;
+color:#12355b;
+padding:10px 20px;
+border-radius:8px;
+text-decoration:none;
+font-weight:bold;
+}
+
+.welcome{
+text-align:center;
+padding:40px 20px;
+}
+
+.welcome h2{
+font-size:34px;
+color:#12355b;
+margin-bottom:10px;
+}
+
+.welcome p{
+color:#666;
+font-size:18px;
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:20px;
+padding:20px;
+}
+
+.stat{
+background:white;
+padding:25px;
+border-radius:15px;
+text-align:center;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+
+.stat h3{
+font-size:35px;
+color:#12355b;
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+padding:20px;
+}
+
+.card{
+background:white;
+padding:30px;
+border-radius:15px;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+text-align:center;
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+}
+
+.card h2{
+margin:15px 0;
+color:#12355b;
+}
+
+.card p{
+color:#666;
+margin-bottom:20px;
+}
+
+.btn{
+display:inline-block;
+padding:12px 25px;
+background:#12355b;
+color:white;
+text-decoration:none;
+border-radius:8px;
+}
+
+footer{
+margin-top:40px;
+background:#12355b;
+color:white;
+text-align:center;
+padding:20px;
+}
+</style>
+
+</head>
+<body>
+
+<header>
+<h1>Business Bridge</h1>
+
+<a href="login.html" class="logout">Logout</a>
+</header>
+
+<section class="welcome">
+<h2>Welcome to Business Bridge</h2>
+<p>Your all-in-one platform for learning, creating and growing with AI.</p>
+</section>
+
+<section class="stats">
+
+<div class="stat">
+<h3>2,540</h3>
+<p>Users</p>
+</div>
+
+<div class="stat">
+<h3>18,320</h3>
+<p>AI Chats</p>
+</div>
+
+<div class="stat">
+<h3>620</h3>
+<p>Projects</p>
+</div>
+
+<div class="stat">
+<h3>$48K</h3>
+<p>Revenue</p>
+</div>
+
+</section>
+
+<section class="cards">
+
+<div class="card">
+<h2>🤖 AI Assistant</h2>
+<p>Chat with Business Bridge AI.</p>
+<a href="ai.html" class="btn">Open</a>
+</div>
+
+<div class="card">
+<h2>🎓 Student Learning</h2>
+<p>Courses and learning tools.</p>
+<a href="students.html" class="btn">Open</a>
+</div>
+
+<div class="card">
+<h2>🎥 Creator Studio</h2>
+<p>Grow your content and audience.</p>
+<a href="creators.html" class="btn">Open</a>
+</div>
+
+<div class="card">
+<h2>💼 Business Tools</h2>
+<p>Powerful business resources.</p>
+<a href="business.html" class="btn">Open</a>
+</div>
+
+</section>
+
+<footer>
+© 2026 Business Bridge. All Rights Reserved.
+</footer>
+
+</body>
+</html>
