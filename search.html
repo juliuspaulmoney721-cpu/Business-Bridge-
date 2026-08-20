@@ -633,19 +633,117 @@
 
         connectButton.addEventListener(
           "click",
-          () => {
-
-            alert(
-              "Connection feature coming next."
-            );
-
-          }
+          () => sendConnectionRequest(profile.id, connectButton)
         );
 
 
         results.appendChild(card);
 
       });
+
+    }
+
+
+    /*
+      SEND CONNECTION REQUEST
+    */
+
+    async function sendConnectionRequest(recipientId, button) {
+
+      if (!currentUser) {
+
+        alert("Please log in first.");
+        return;
+
+      }
+
+      if (!recipientId || recipientId === currentUser.id) {
+
+        alert("You cannot connect with yourself.");
+        return;
+
+      }
+
+      const originalText = button.textContent;
+      button.disabled = true;
+      button.textContent = "Checking...";
+
+      try {
+
+        // Check for an existing request in either direction.
+        const { data: existing, error: checkError } =
+          await supabase
+            .from("connections")
+            .select("id, requester_id, recipient_id, status")
+            .or(
+              `and(requester_id.eq.${currentUser.id},recipient_id.eq.${recipientId}),and(requester_id.eq.${recipientId},recipient_id.eq.${currentUser.id})`
+            )
+            .limit(1);
+
+        if (checkError) {
+          throw checkError;
+        }
+
+        if (existing && existing.length > 0) {
+
+          const connection = existing[0];
+
+          if (connection.status === "accepted") {
+            button.textContent = "Connected";
+            return;
+          }
+
+          if (connection.status === "pending") {
+            button.textContent =
+              connection.requester_id === currentUser.id
+                ? "Pending"
+                : "Requested";
+            return;
+          }
+
+          if (connection.status === "declined") {
+            button.textContent = "Declined";
+            return;
+          }
+
+        }
+
+        button.textContent = "Sending...";
+
+        const { error: insertError } =
+          await supabase
+            .from("connections")
+            .insert({
+              requester_id: currentUser.id,
+              recipient_id: recipientId,
+              status: "pending"
+            });
+
+        if (insertError) {
+          // A duplicate request can happen if two taps occur quickly.
+          if (insertError.code === "23505") {
+            button.textContent = "Pending";
+            return;
+          }
+
+          throw insertError;
+        }
+
+        button.textContent = "Pending";
+        button.disabled = true;
+
+      } catch (error) {
+
+        console.error("Connection request error:", error);
+
+        button.disabled = false;
+        button.textContent = originalText;
+
+        alert(
+          "We couldn't send the connection request. Please try again."
+        );
+
+      }
 
     }
 
