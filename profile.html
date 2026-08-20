@@ -78,57 +78,18 @@
 </div>
 
 <nav class="bottom-nav"><a href="dashboard.html"><span>⌂</span>Home</a><a href="search.html"><span>⌕</span>Search</a><a href="create.html"><span>⊞</span>Create</a><a href="messages.html"><span>▢</span>Messages</a><a class="active" href="profile.html"><span>♙</span>Profile</a></nav>
-<script>
-function getProfile(){
- const saved=localStorage.getItem("pixora_profile");
- if(saved){try{return JSON.parse(saved)}catch(e){}}
- const p={name:localStorage.getItem("bb_name")||"Julius Oghenero",username:localStorage.getItem("bb_username")||"juliusoghenero",bio:"",avatar:"",cover:"",followers:0,following:0};
- localStorage.setItem("pixora_profile",JSON.stringify(p)); return p;
-}
-function saveProfile(p){localStorage.setItem("pixora_profile",JSON.stringify(p));localStorage.setItem("bb_name",p.name);localStorage.setItem("bb_username",p.username);}
-function readImage(file,maxW,maxH,quality=0.84){return new Promise((resolve,reject)=>{if(!file||!file.type.startsWith("image/")){reject(new Error("Please choose an image."));return}const reader=new FileReader();reader.onerror=()=>reject(new Error("Could not read the image."));reader.onload=()=>{const img=new Image();img.onerror=()=>reject(new Error("Could not load the image."));img.onload=()=>{const scale=Math.min(1,maxW/img.width,maxH/img.height);const w=Math.max(1,Math.round(img.width*scale)),h=Math.max(1,Math.round(img.height*scale));const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);resolve(c.toDataURL("image/jpeg",quality));};img.src=reader.result};reader.readAsDataURL(file);});}
-function initial(n){return (String(n||"?").trim()[0]||"?").toUpperCase()}
+<script src="pixora-data.js"></script><script>
+function getProfile(){return PixoraData.me()}
+function saveProfile(p){return PixoraData.saveMe(p)}
+function readImage(file,maxW,maxH,quality=0.84){return new Promise((resolve,reject)=>{if(!file||!file.type.startsWith('image/')){reject(new Error('Please choose an image.'));return}const reader=new FileReader();reader.onerror=()=>reject(new Error('Could not read the image.'));reader.onload=()=>{const img=new Image();img.onerror=()=>reject(new Error('Could not load the image.'));img.onload=()=>{const scale=Math.min(1,maxW/img.width,maxH/img.height);const w=Math.max(1,Math.round(img.width*scale)),h=Math.max(1,Math.round(img.height*scale));const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);resolve(c.toDataURL('image/jpeg',quality))};img.src=reader.result};reader.readAsDataURL(file)})}
+function initial(n){return(String(n||'?').trim()[0]||'?').toUpperCase()}
 function avatar(el,p){el.innerHTML=p.avatar?`<img src="${p.avatar}" alt="Profile picture">`:initial(p.name)}
-function render(){
- const p=getProfile();
- document.getElementById("profileName").textContent=p.name;
- document.getElementById("profileUsername").textContent="@"+String(p.username||"").replace(/^@/,"");
- document.getElementById("profileBio").textContent=p.bio||"";
- document.getElementById("profileBio").style.display=p.bio?"block":"none";
- document.getElementById("followers").textContent=p.followers||0;
- document.getElementById("following").textContent=p.following||0;
- avatar(document.getElementById("profileAvatar"),p);
- const h=document.getElementById("headerAvatar"); h.innerHTML=p.avatar?`<img class="avatar-photo" src="${p.avatar}" alt="Profile picture">`:initial(p.name);
- const cover=document.getElementById("profileCover"); if(p.cover){cover.style.backgroundImage=`url("${p.cover}")`;cover.classList.add("has-image")}else{cover.style.backgroundImage="";cover.classList.remove("has-image")}
- const posts=JSON.parse(localStorage.getItem("bb_posts")||"[]").filter(x=>x && x.user===p.name);
- document.getElementById("noPosts").style.display=posts.length?"none":"block";
-}
-function openEditor(){
- const p=getProfile(); document.getElementById("editName").value=p.name||""; document.getElementById("editUsername").value=(p.username||"").replace(/^@/,""); document.getElementById("editBio").value=p.bio||"";
- const preview=document.getElementById("editAvatarPreview"); avatar(preview,p); preview.style.width="96px";preview.style.height="96px";preview.style.fontSize="34px"; document.getElementById("editAvatarPreview").dataset.cover=p.cover||""; document.getElementById("editModal").classList.add("open");
-}
-document.getElementById("editBtn").onclick=openEditor;
-document.getElementById("cancelEdit").onclick=()=>document.getElementById("editModal").classList.remove("open");
-document.getElementById("editModal").addEventListener("click",e=>{if(e.target.id==="editModal")e.currentTarget.classList.remove("open")});
-document.getElementById("avatarInput").onchange=async e=>{
- const f=e.target.files[0]; if(!f)return;
- try{const data=await readImage(f,800,800,0.86);document.getElementById("editAvatarPreview").innerHTML=`<img src="${data}" alt="Profile picture">`;document.getElementById("editAvatarPreview").dataset.avatar=data;}catch(err){alert(err.message)}
-};
-document.getElementById("coverInput").onchange=async e=>{
- const f=e.target.files[0]; if(!f)return;
- try{const data=await readImage(f,1600,700,0.84);document.getElementById("editAvatarPreview").dataset.cover=data;alert("Cover photo selected. Tap Save changes to apply it.");}catch(err){alert(err.message)}
-};
-document.getElementById("saveEdit").onclick=()=>{
- const p=getProfile(); const name=document.getElementById("editName").value.trim(); let username=document.getElementById("editUsername").value.trim().replace(/^@/,"").toLowerCase(); const bio=document.getElementById("editBio").value.trim();
- if(!name){alert("Enter your name.");return}
- if(!/^[a-z0-9._]{3,30}$/.test(username)){alert("Username must be 3–30 characters and use only letters, numbers, dots or underscores.");return}
- const oldName=p.name; p.name=name;p.username=username;p.bio=bio;
- const av=document.getElementById("editAvatarPreview").dataset.avatar;if(av)p.avatar=av; const cv=document.getElementById("editAvatarPreview").dataset.cover;if(cv)p.cover=cv;
- saveProfile(p);
- let posts=JSON.parse(localStorage.getItem("bb_posts")||"[]");posts=posts.map(x=>x.user===oldName?{...x,user:name,initial:initial(name)}:x);localStorage.setItem("bb_posts",JSON.stringify(posts));
- document.getElementById("editModal").classList.remove("open");render();
-};
-render();
+function render(){const p=getProfile();document.getElementById('profileName').textContent=p.name;document.getElementById('profileUsername').textContent='@'+p.username;document.getElementById('profileBio').textContent=p.bio||'';document.getElementById('profileBio').style.display=p.bio?'block':'none';document.getElementById('followers').textContent=PixoraData.followersCount(p.username);document.getElementById('following').textContent=PixoraData.followingCount(p.username);avatar(document.getElementById('profileAvatar'),p);const h=document.getElementById('headerAvatar');h.innerHTML=p.avatar?`<img class="avatar-photo" src="${p.avatar}" alt="Profile picture">`:initial(p.name);const cover=document.getElementById('profileCover');if(p.cover){cover.style.backgroundImage=`url("${p.cover}")`;cover.classList.add('has-image')}else{cover.style.backgroundImage='';cover.classList.remove('has-image')}const posts=PixoraData.read('bb_posts',[]).filter(x=>x&&x.username===p.username);document.getElementById('noPosts').style.display=posts.length?'none':'block'}
+function openEditor(){const p=getProfile();document.getElementById('editName').value=p.name||'';document.getElementById('editUsername').value=p.username||'';document.getElementById('editBio').value=p.bio||'';const preview=document.getElementById('editAvatarPreview');avatar(preview,p);preview.style.width='96px';preview.style.height='96px';preview.style.fontSize='34px';preview.dataset.avatar='';preview.dataset.cover=p.cover||'';document.getElementById('editModal').classList.add('open')}
+document.getElementById('editBtn').onclick=openEditor;document.getElementById('cancelEdit').onclick=()=>document.getElementById('editModal').classList.remove('open');document.getElementById('editModal').addEventListener('click',e=>{if(e.target.id==='editModal')e.currentTarget.classList.remove('open')});
+document.getElementById('avatarInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=await readImage(f,800,800,.86);document.getElementById('editAvatarPreview').innerHTML=`<img src="${data}" alt="Profile picture">`;document.getElementById('editAvatarPreview').dataset.avatar=data}catch(err){alert(err.message)}};
+document.getElementById('coverInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=await readImage(f,1600,700,.84);document.getElementById('editAvatarPreview').dataset.cover=data;alert('Cover photo selected. Tap Save changes to apply it.')}catch(err){alert(err.message)}};
+document.getElementById('saveEdit').onclick=()=>{const p=getProfile(),oldUsername=p.username,name=document.getElementById('editName').value.trim(),username=document.getElementById('editUsername').value.trim().replace(/^@/,'').toLowerCase(),bio=document.getElementById('editBio').value.trim();if(!name){alert('Enter your name.');return}if(!/^[a-z0-9._]{3,30}$/.test(username)){alert('Username must be 3–30 characters and use only letters, numbers, dots or underscores.');return}p.name=name;p.username=username;p.bio=bio;const av=document.getElementById('editAvatarPreview').dataset.avatar;if(av)p.avatar=av;const cv=document.getElementById('editAvatarPreview').dataset.cover;if(cv)p.cover=cv;saveProfile(p);let posts=PixoraData.read('bb_posts',[]);posts=posts.map(x=>x.username===oldUsername?{...x,username:p.username,user:p.name,avatar:p.avatar||''}:x);PixoraData.write('bb_posts',posts);let profiles=PixoraData.read('pixora_profiles',[]).filter(x=>x.username!==oldUsername);profiles.push(p);PixoraData.write('pixora_profiles',profiles);document.getElementById('editModal').classList.remove('open');render()};render();
 </script>
 <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));}</script>
 </body></html>
