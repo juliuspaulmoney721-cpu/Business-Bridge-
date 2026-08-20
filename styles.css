@@ -73,3 +73,5 @@ button{cursor:pointer;border:0}
  .topbar{padding:0 16px;gap:16px}.brand{font-size:31px}.topnav{gap:15px}.topnav a{font-size:23px}
  .page-title{font-size:34px}.subtitle{font-size:18px}
 }
+
+.avatar-photo{object-fit:cover;display:block;overflow:hidden}.profile-avatar.avatar-photo{width:142px;height:142px;border:8px solid #fff;border-radius:50%;background:#eee4f7}.big-avatar.avatar-photo{width:66px;height:66px;border-radius:50%;object-fit:cover}.topbar .avatar-photo{width:42px;height:42px;border-radius:50%;object-fit:cover}.profile-edit-avatar{width:96px;height:96px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 10px}.profile-avatar-input{display:none}
