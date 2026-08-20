@@ -1,12 +1,55 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#050505"><title>Business Bridge</title><style>
-:root{--bg:#050505;--panel:#0d0d0f;--panel2:#141416;--line:#25252a;--text:#f5f5f7;--muted:#9b9ba5;--accent:#c04cff;--accent2:#8f39ff;--danger:#ff4d67}
-*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}body{min-height:100vh;padding-bottom:84px}a{text-decoration:none;color:inherit}button,input,textarea{font:inherit}button{cursor:pointer}
-.topbar{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 18px;gap:22px;position:sticky;top:0;background:rgba(5,5,5,.96);z-index:20}.brand{font-size:28px;font-weight:800;color:var(--accent);letter-spacing:-1px}.topnav{display:flex;align-items:center;gap:24px;flex:1}.topnav a{color:#aaa;font-size:24px}.topnav a.active,.topnav a:hover{color:var(--accent)}.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#1d0c2a;border:1px solid #43235b;color:var(--accent);font-weight:700}
-.container{width:min(760px,100%);margin:0 auto;padding:18px}.wide{width:min(980px,100%)}.stories{display:flex;gap:18px;overflow:auto;padding:8px 0 18px;border-bottom:1px solid var(--line)}.story{min-width:72px;text-align:center;color:var(--muted);font-size:12px}.story-ring{width:62px;height:62px;border-radius:50%;padding:2px;margin:0 auto 6px;background:linear-gradient(135deg,var(--accent),#5f2bff)}.story-inner{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;background:#15151a;border:2px solid #080808;color:var(--accent);font-weight:700}.story.add .story-inner{font-size:28px}
-.feed{display:flex;flex-direction:column;gap:18px;margin-top:18px}.post{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}.post-head{display:flex;align-items:center;gap:10px;padding:15px}.post-user{font-weight:700}.post-time{font-size:12px;color:var(--muted);margin-top:3px}.post-media{width:100%;aspect-ratio:1/1;display:grid;place-items:center;background:linear-gradient(145deg,#111,#090909);font-size:80px}.post-media img{width:100%;height:100%;object-fit:cover}.post-body{padding:12px 15px}.post-actions{display:flex;gap:22px;font-size:26px;color:#c8c8cf}.post-actions button{background:none;border:0;color:inherit;padding:0}.post-actions button.liked{color:var(--accent)}.likes{font-weight:700;margin:10px 0 6px}.caption{color:#ddd;line-height:1.45}.comment-preview{color:var(--muted);margin-top:7px}.composer{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:15px;margin-top:18px}.composer textarea,.field input,.field textarea{width:100%;background:#101014;border:1px solid #303038;border-radius:12px;color:var(--text);padding:13px;outline:none}.composer textarea:focus,.field input:focus,.field textarea:focus{border-color:var(--accent)}.row{display:flex;gap:10px;align-items:center}.btn{border:0;border-radius:12px;padding:11px 18px;background:var(--accent);color:#090909;font-weight:700}.btn.secondary{background:#242429;color:#fff}.btn.ghost{background:transparent;border:1px solid #34343b;color:#fff}.btn.full{width:100%}
-.page-title{font-size:38px;line-height:1.08;margin:24px 0 8px}.subtitle{color:var(--muted);font-size:17px;line-height:1.5}.searchbox{display:flex;gap:10px;margin:22px 0}.searchbox input{flex:1;background:#111114;border:1px solid #34343a;border-radius:14px;padding:15px;color:white}.chips{display:flex;gap:10px;overflow:auto;margin-bottom:20px}.chip{border:1px solid #38383f;background:transparent;color:#bbb;border-radius:22px;padding:10px 17px;white-space:nowrap}.chip.active{background:var(--accent);color:#090909;border-color:var(--accent)}.profile-card,.info-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0}.person{display:flex;gap:14px;align-items:center}.big-avatar{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:#1c0d28;color:var(--accent);font-size:25px;font-weight:800}.tag{display:inline-block;background:#24162d;color:#d8b3ff;border-radius:9px;padding:5px 9px;font-size:12px;margin-top:6px}.muted{color:var(--muted)}
-.bottom-nav{position:fixed;left:0;right:0;bottom:0;height:78px;background:rgba(8,8,9,.98);border-top:1px solid var(--line);display:flex;justify-content:space-around;z-index:30}.bottom-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#8d8d96;font-size:11px}.bottom-nav a span{font-size:24px}.bottom-nav a.active{color:var(--accent)}
-.auth{min-height:100vh;display:grid;place-items:center;padding:20px}.auth-card{width:min(440px,100%);background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:26px}.auth-card h1{color:var(--accent);font-size:34px;margin-top:0}.field{margin:14px 0}.field label{display:block;color:#bbb;margin-bottom:7px;font-size:13px}.error{color:#ff7184;margin:10px 0}.success{color:#8cffb1;margin:10px 0}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:flex-end;justify-content:center;z-index:50}.modal.open{display:flex}.sheet{width:min(650px,100%);background:#111114;border:1px solid var(--line);border-radius:22px 22px 0 0;padding:20px}.empty{text-align:center;padding:40px 20px;color:var(--muted)}.toast{position:fixed;left:50%;bottom:95px;transform:translateX(-50%);background:#25252b;color:#fff;border:1px solid #3a3a42;padding:11px 15px;border-radius:12px;display:none;z-index:60}.toast.show{display:block}
-@media(min-width:800px){.bottom-nav{display:none}.container{padding-top:28px}.topbar{padding:0 max(18px,calc((100vw - 1100px)/2))}}
-</style></head><body><header class="topbar"><a class="brand" href="dashboard.html">Business Bridge</a><nav class="topnav"><a href="dashboard.html" title="Home">⌂</a><a href="search.html" title="Search">⌕</a><a href="create.html" title="Create">⊞</a><a href="messages.html" title="Messages">□</a><a href="notifications.html" title="Notifications">♧</a></nav><a class="avatar" id="topAvatar" href="profile.html">J</a></header><main class="container"><div class="profile-card"><div class="person"><div class="big-avatar" style="width:90px;height:90px;font-size:34px">J</div><div><h1 style="margin:0">Julius Oghenero</h1><span class="tag">Business</span><p class="muted">Business Bridge member</p></div></div><div class="row" style="margin-top:20px"><button class="btn" onclick="alert('Profile editing is ready to connect to your profile table.')">Edit profile</button><button class="btn secondary" onclick="logout()">Logout</button></div></div><div class="info-card"><h2>About</h2><p class="muted">Build connections, discover opportunities and grow your network.</p></div></main><nav class="bottom-nav"><a href="dashboard.html" data-page="home"><span>⌂</span>Home</a><a href="search.html" data-page="search"><span>⌕</span>Search</a><a href="connect.html" data-page="connect"><span>🤝</span>Connect</a><a href="messages.html" data-page="messages"><span>💬</span>Messages</a><a href="profile.html" data-page="profile"><span>●</span>Profile</a></nav><script type="module">import {supabase} from './supabase.js';window.logout=async()=>{try{await supabase.auth.signOut()}catch(e){}location.href='login.html'}</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff"><title>Profile — Business Bridge</title><link rel="stylesheet" href="styles.css">
+<style>
+.profile-page{max-width:760px;margin:0 auto;padding-bottom:24px}
+.profile-cover{height:96px;background:linear-gradient(100deg,#f4dcff,#ffe9e2);position:relative;border-bottom:1px solid #eee}
+.profile-main{padding:0 34px}
+.profile-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;margin-top:-44px}
+.profile-avatar{width:142px;height:142px;border-radius:50%;background:#eee4f7;border:8px solid #fff;display:grid;place-items:center;color:#913bd2;font-size:48px;font-weight:500}
+.edit-profile{margin-top:62px;background:#f2f2f2;border-radius:13px;padding:13px 21px;font-weight:500;font-size:18px;display:flex;align-items:center;gap:12px}
+.edit-profile svg{width:25px;height:25px}
+.profile-name{font-size:36px;line-height:1.15;margin:40px 0 8px;font-weight:750;letter-spacing:-.8px}
+.username{font-size:21px;color:#777;margin:0}
+.follow-row{display:flex;gap:52px;margin:48px 0 38px;font-size:21px;color:#666}
+.follow-row strong{color:#111}
+.highlight{width:82px;text-align:center;color:#666;font-size:17px}
+.highlight-circle{width:82px;height:82px;border:4px dashed #ddd;border-radius:50%;display:grid;place-items:center;font-size:36px;margin-bottom:10px}
+.profile-tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #ddd;margin-top:66px}
+.profile-tab{height:62px;display:flex;justify-content:center;align-items:center;gap:12px;font-size:23px;color:#666;position:relative}
+.profile-tab.active{color:#8e3bd1}
+.profile-tab.active:after{content:"";position:absolute;bottom:-1px;left:0;right:0;height:4px;background:#9a3ed8}
+.profile-tab svg{width:27px;height:27px}
+.no-posts{text-align:center;color:#666;padding:120px 20px 150px}
+.no-posts svg{width:72px;height:72px;color:#ccc;margin-bottom:24px}
+.no-posts div{font-size:30px}
+@media(max-width:650px){
+ .profile-main{padding:0 34px}.profile-cover{height:96px}.profile-avatar{width:128px;height:128px;font-size:44px}.edit-profile{font-size:17px;padding:12px 16px}.profile-name{font-size:34px}.follow-row{gap:36px;font-size:20px}.profile-tab{font-size:21px}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+<a class="brand" href="dashboard.html">Business Bridge</a>
+<nav class="topnav">
+<a href="dashboard.html" title="home"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5v9a1.5 1.5 0 0 1-1.5 1.5h-5v-6h-5v6h-5A1.5 1.5 0 0 1 3 19.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></a>
+<a href="search.html" title="search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></a>
+<a href="create.html" title="create"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></a>
+<a href="messages.html" title="messages"><svg viewBox="0 0 24 24"><path d="M5 5.5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H10l-5 3v-3.5a2 2 0 0 1-2-2v-7.5a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></a>
+<a href="notifications.html" title="notifications"><svg viewBox="0 0 24 24"><path d="M6 17h12l-1.2-1.7a4 4 0 0 1-.8-2.4V10a4 4 0 0 0-8 0v2.9a4 4 0 0 1-.8 2.4zM10 20h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></a>
+</nav><a class="avatar" href="profile.html">J</a>
+</header>
+<main class="profile-page">
+<section class="profile-cover"></section>
+<section class="profile-main">
+<div class="profile-top"><div class="profile-avatar">J</div><button class="edit-profile" onclick="alert('Profile editing is ready.')"><svg viewBox="0 0 24 24"><path d="M12 3l1.3 2.2 2.5.5 1.8-1.3 1.9 1.9-1.3 1.8.5 2.5L21 12l-2.3 1.3-.5 2.5 1.3 1.8-1.9 1.9-1.8-1.3-2.5.5L12 21l-1.3-2.3-2.5-.5-1.8 1.3-1.9-1.9 1.3-1.8-.5-2.5L3 12l2.3-1.3.5-2.5-1.3-1.8 1.9-1.9 1.8 1.3 2.5-.5z" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.7"/></svg> Edit profile</button></div>
+<h1 class="profile-name">Julius Oghenero</h1><p class="username">@juliusoghenero</p>
+<div class="follow-row"><span><strong>0</strong> followers</span><span><strong>0</strong> following</span></div>
+<div class="highlight"><div class="highlight-circle">+</div>New</div>
+<div class="profile-tabs"><button class="profile-tab active"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 4v16M15 4v16M4 9h16M4 15h16" stroke="currentColor" stroke-width="1.5"/></svg>Posts</button><button class="profile-tab"><svg viewBox="0 0 24 24"><path d="M8 4h8l-1 6 3 3v2H6v-2l3-3zM9 15v5M15 15v5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Pinned</button></div>
+<div class="no-posts"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 5v14M15 5v14M5 9h14M5 15h14" stroke="currentColor" stroke-width="1.6"/></svg><div>No posts yet</div></div>
+</section></main>
+<nav class="bottom-nav"><a href="dashboard.html"><span>⌂</span>Home</a><a href="search.html"><span>⌕</span>Search</a><a href="create.html"><span>⊞</span>Create</a><a href="messages.html"><span>▢</span>Messages</a><a class="active" href="profile.html"><span>♙</span>Profile</a></nav>
+</body></html>
