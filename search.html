@@ -169,6 +169,13 @@
       margin-bottom: 7px;
     }
 
+    .profile-detail {
+      color: #52627a;
+      font-size: 13px;
+      margin: 2px 0 6px;
+      font-weight: 600;
+    }
+
     .bio {
       color: #667085;
       line-height: 1.4;
@@ -582,6 +589,16 @@
           profile.bio ||
           "Business Bridge member";
 
+        // Use an optional public profile detail when available.
+        // This helps distinguish members who have the same full name
+        // without exposing private account information.
+        const profileDetail =
+          profile.username ||
+          profile.headline ||
+          profile.company_name ||
+          profile.school_name ||
+          "";
+
 
         const firstLetter =
           name.charAt(0).toUpperCase();
@@ -610,6 +627,12 @@
             <div class="type">
               ${escapeHtml(type)}
             </div>
+
+            ${profileDetail ? `
+              <div class="profile-detail">
+                ${escapeHtml(profileDetail)}
+              </div>
+            ` : ""}
 
             <div class="bio">
               ${escapeHtml(bio)}
