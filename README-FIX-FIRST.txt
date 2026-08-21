@@ -1,15 +1,16 @@
-PIXORA — CLEAN REPAIR BUILD
+PIXORA — CLEAN REPLACEMENT BUILD
 
-This package is the clean replacement build for the Pixora GitHub site.
+This ZIP is the current Pixora source, repaired to use the real Supabase backend.
 
-1. Replace ALL files in the GitHub repository with the files in this folder.
-2. In Supabase SQL Editor, open schema.sql and run it once. It repairs the old posts.user_id -> posts.author_id setup and removes the recursive messaging RLS policies.
-3. Wait for GitHub Pages to publish. Then refresh the site.
+1. Replace ALL files in the GitHub repository with the files from this ZIP.
+2. In Supabase SQL Editor, run schema.sql ONCE. It repairs posts.user_id/author_id and removes the recursive messaging RLS policies.
+3. Do NOT delete your Supabase project or tables.
+4. After GitHub Pages publishes, hard-refresh the site. The service-worker cache is v8.
 
-IMPORTANT:
-- Do not delete your Supabase project.
-- Do not delete tables just because the SQL Editor shows old Untitled queries. Those tabs are only saved/unsaved SQL editor documents.
-- The app now has a temporary legacy fallback for posts.user_id so posting can still work while the database repair is being applied.
-- Service worker cache is v7 so the new JavaScript is fetched instead of staying on the previous Pixora build.
+POSTING FIX:
+The app now sends the authenticated user's ID to both author_id and the legacy user_id when publishing. This prevents the old NOT NULL user_id error even if the database migration has not been applied yet. Once schema.sql is run, user_id is removed and the app uses author_id.
+
+MESSAGING FIX:
+schema.sql replaces the recursive conversation_members RLS policies with a security-definer membership check. Run schema.sql before testing Messages.
 
 Supabase project URL is already configured in supabase.js.

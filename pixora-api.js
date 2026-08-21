@@ -176,28 +176,46 @@ export async function createPost({content, imageUrl}){
   const user = await currentUser();
   if(!user) throw new Error('Please log in first.');
 
-  const payload = {
-    author_id: user.id,
-    content: String(content || '').trim(),
-    image_url: imageUrl || null
-  };
+  const contentValue = String(content || '').trim();
+  const imageValue = imageUrl || null;
 
-  // The current Pixora schema uses author_id. Some older deployments still
-  // have a NOT NULL posts.user_id column. Try the new schema first, then
-  // transparently support that legacy table until the repair SQL is applied.
+  // Normal/repaired schema: author_id is the owner column.
   let result = await supabase
     .from('posts')
-    .insert(payload)
-    .select('id,author_id,content,image_url,created_at')
+    .insert({
+      author_id: user.id,
+      content: contentValue,
+      image_url: imageValue
+    })
+    .select('*')
     .single();
 
-  if(result.error && /user_id.*not-null|column.*user_id/i.test(result.error.message || '')){
+  const firstError = result.error?.message || '';
+
+  // Old deployments can still have a NOT NULL user_id column. Send both
+  // identifiers so the old constraint and the newer RLS policy are satisfied.
+  if(result.error && /user_id.*not-null|not-null.*user_id/i.test(firstError)){
+    result = await supabase
+      .from('posts')
+      .insert({
+        author_id: user.id,
+        user_id: user.id,
+        content: contentValue,
+        image_url: imageValue
+      })
+      .select('*')
+      .single();
+  }
+
+  // Very old deployments may not have author_id at all. Use their legacy
+  // user_id column as a final compatibility path.
+  if(result.error && /author_id.*does not exist|author_id.*schema cache|could not find.*author_id/i.test(firstError)){
     result = await supabase
       .from('posts')
       .insert({
         user_id: user.id,
-        content: payload.content,
-        image_url: payload.image_url
+        content: contentValue,
+        image_url: imageValue
       })
       .select('*')
       .single();
