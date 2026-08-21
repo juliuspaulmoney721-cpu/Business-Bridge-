@@ -4,4 +4,14 @@ const page=location.pathname.split('/').pop()||'index.html';
 async function pixoraLogout(){try{await supabase.auth.signOut()}catch(e){console.warn(e)}['pixora_profile','bb_name','bb_username','bb_email'].forEach(k=>localStorage.removeItem(k));location.href='login.html'}
 window.pixoraLogout=pixoraLogout;
 function addLogout(){if(publicPages.has(page)||document.getElementById('pixoraLogoutBtn'))return;const top=document.querySelector('.topbar');if(!top)return;const b=document.createElement('button');b.id='pixoraLogoutBtn';b.className='pixora-logout';b.type='button';b.textContent='Log out';b.addEventListener('click',pixoraLogout);top.appendChild(b)}
-document.addEventListener('DOMContentLoaded',addLogout);
+async function addNotificationBadge(){
+  if(publicPages.has(page))return;
+  try{
+    const {data:{session}}=await supabase.auth.getSession(); if(!session)return;
+    const {count,error}=await supabase.from('notifications').select('id',{count:'exact',head:true}).eq('recipient_id',session.user.id).eq('read',false);
+    if(error||!count)return;
+    const links=[...document.querySelectorAll('.topnav a[href="notifications.html"]')];
+    links.forEach(link=>{if(!link.querySelector('.nav-badge')){const badge=document.createElement('span');badge.className='nav-badge';badge.textContent=count>99?'99+':String(count);link.style.position='relative';link.appendChild(badge)}});
+  }catch(e){/* database setup page will explain itself */}
+}
+document.addEventListener('DOMContentLoaded',()=>{addLogout();addNotificationBadge()});
