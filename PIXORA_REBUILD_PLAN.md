@@ -1,24 +1,9 @@
-# Pixora Rebuild Plan
+# Pixora rebuild status
 
-This version preserves the existing Pixora app as the base.
+This is the existing Pixora codebase updated in place.
 
-Target experience:
-- Home/feed
-- Stories
-- Search
-- Create posts
-- Photos/videos
-- Likes and comments
-- Follow/following
-- Profiles and profile editing
-- Reels/video section
-- Direct messages
-- Notifications
-- Mobile-first navigation
+Included: existing pages/UI, corrected Supabase client, Supabase login/signup handlers, persistent auth settings, shared logout across app pages, and the existing local data layer preserved for compatibility.
 
-Backend direction:
-- Supabase Auth for accounts/sessions
-- Supabase Database for profiles, posts, follows, likes, comments, messages and notifications
-- Supabase Storage for profile and post media
+Next: Supabase profiles, posts/media, likes/comments, follows, stories/reels, messaging, notifications, and search.
 
-Important: the Hercules screenshots are a functional/design reference only. Pixora keeps its own name, branding and source code.
+The Hercules screenshots are the product reference only; Pixora keeps its own identity and source code.
