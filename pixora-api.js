@@ -151,16 +151,22 @@ async function getProfilesByIds(ids){
 }
 
 export async function listPosts(){
-  const { data: posts, error } = await supabase
+  // Read the complete row so this build can temporarily tolerate an older
+  // posts.user_id column while the Supabase repair is being applied.
+  const { data: rawPosts, error } = await supabase
     .from('posts')
-    .select('id,author_id,content,image_url,created_at')
+    .select('*')
     .order('created_at', { ascending: false })
     .limit(100);
 
   if(error) throw new Error(errorMessage(error, 'Could not load Pixora posts'));
 
-  const profiles = await getProfilesByIds((posts || []).map(p => p.author_id));
-  return (posts || []).map(p => ({
+  const posts = (rawPosts || []).map(p => ({
+    ...p,
+    author_id: p.author_id || p.user_id || null
+  }));
+  const profiles = await getProfilesByIds(posts.map(p => p.author_id));
+  return posts.map(p => ({
     ...p,
     profile: profiles.get(p.author_id) || null
   }));
@@ -170,18 +176,35 @@ export async function createPost({content, imageUrl}){
   const user = await currentUser();
   if(!user) throw new Error('Please log in first.');
 
-  const { data, error } = await supabase
+  const payload = {
+    author_id: user.id,
+    content: String(content || '').trim(),
+    image_url: imageUrl || null
+  };
+
+  // The current Pixora schema uses author_id. Some older deployments still
+  // have a NOT NULL posts.user_id column. Try the new schema first, then
+  // transparently support that legacy table until the repair SQL is applied.
+  let result = await supabase
     .from('posts')
-    .insert({
-      author_id: user.id,
-      content: String(content || '').trim(),
-      image_url: imageUrl || null
-    })
+    .insert(payload)
     .select('id,author_id,content,image_url,created_at')
     .single();
 
-  if(error) throw new Error(errorMessage(error, 'Could not publish post'));
-  return data;
+  if(result.error && /user_id.*not-null|column.*user_id/i.test(result.error.message || '')){
+    result = await supabase
+      .from('posts')
+      .insert({
+        user_id: user.id,
+        content: payload.content,
+        image_url: payload.image_url
+      })
+      .select('*')
+      .single();
+  }
+
+  if(result.error) throw new Error(errorMessage(result.error, 'Could not publish post'));
+  return result.data;
 }
 
 export async function isFollowing(userId){
@@ -231,17 +254,22 @@ export async function toggleFollow(userId){
 }
 
 export async function getCounts(userId){
-  const results = await Promise.all([
+  const followResults = await Promise.all([
     supabase.from('follows').select('*', { count:'exact', head:true }).eq('following_id', userId),
-    supabase.from('follows').select('*', { count:'exact', head:true }).eq('follower_id', userId),
-    supabase.from('posts').select('*', { count:'exact', head:true }).eq('author_id', userId)
+    supabase.from('follows').select('*', { count:'exact', head:true }).eq('follower_id', userId)
   ]);
+  if(followResults.some(r => r.error)) throw new Error(errorMessage(followResults.find(r => r.error)?.error, 'Could not load profile counts'));
 
-  for(const r of results) if(r.error) throw new Error(errorMessage(r.error, 'Could not load profile counts'));
+  let postCount = await supabase.from('posts').select('*', { count:'exact', head:true }).eq('author_id', userId);
+  if(postCount.error && /author_id|column/i.test(postCount.error.message || '')){
+    postCount = await supabase.from('posts').select('*', { count:'exact', head:true }).eq('user_id', userId);
+  }
+  if(postCount.error) throw new Error(errorMessage(postCount.error, 'Could not load profile counts'));
+
   return {
-    followers: results[0].count || 0,
-    following: results[1].count || 0,
-    posts: results[2].count || 0
+    followers: followResults[0].count || 0,
+    following: followResults[1].count || 0,
+    posts: postCount.count || 0
   };
 }
 
