@@ -46,3 +46,20 @@ for(const requiredText of [
 
 if(!ok) process.exit(1);
 console.log('Pixora source smoke test passed.');
+
+const api2 = fs.readFileSync(root + 'pixora-api.js','utf8');
+if(!api2.includes('author_id: user.id') || !api2.includes('user_id: user.id')){
+  console.error('Post publishing fallback is missing author_id/user_id handling');
+  process.exit(1);
+}
+const sw = fs.readFileSync(root + 'sw.js','utf8');
+if(!sw.includes("pixora-v10") || !sw.includes("key.startsWith('pixora-')")){
+  console.error('Cache-busting service worker is missing');
+  process.exit(1);
+}
+const schema = fs.readFileSync(root + 'schema.sql','utf8');
+if(!schema.includes("drop policy if exists") || !schema.includes('set row_security = off')){
+  console.error('Supabase policy repair is missing');
+  process.exit(1);
+}
+console.log('Pixora repair regression checks passed.');

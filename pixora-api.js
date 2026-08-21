@@ -176,49 +176,63 @@ export async function createPost({content, imageUrl}){
   const user = await currentUser();
   if(!user) throw new Error('Please log in first.');
 
-  const contentValue = String(content || '').trim();
-  const imageValue = imageUrl || null;
+  const payload = {
+    author_id: user.id,
+    content: String(content || '').trim(),
+    image_url: imageUrl || null
+  };
 
-  // Normal/repaired schema: author_id is the owner column.
+  // First use the clean Pixora schema (posts.author_id). If the live
+  // database is still an older schema, handle the two common legacy shapes
+  // without making the user delete/recreate their tables.
   let result = await supabase
     .from('posts')
-    .insert({
-      author_id: user.id,
-      content: contentValue,
-      image_url: imageValue
-    })
+    .insert(payload)
     .select('*')
     .single();
 
-  const firstError = result.error?.message || '';
+  if(result.error){
+    const msg = result.error.message || '';
+    const needsLegacyUserId = /user_id.*not-null|column.*user_id/i.test(msg);
+    const authorColumnMissing = /author_id.*column|column.*author_id.*does not exist/i.test(msg);
 
-  // Old deployments can still have a NOT NULL user_id column. Send both
-  // identifiers so the old constraint and the newer RLS policy are satisfied.
-  if(result.error && /user_id.*not-null|not-null.*user_id/i.test(firstError)){
-    result = await supabase
-      .from('posts')
-      .insert({
-        author_id: user.id,
-        user_id: user.id,
-        content: contentValue,
-        image_url: imageValue
-      })
-      .select('*')
-      .single();
-  }
+    if(needsLegacyUserId){
+      // Old table has both columns and user_id is still NOT NULL.
+      result = await supabase
+        .from('posts')
+        .insert({
+          author_id: user.id,
+          user_id: user.id,
+          content: payload.content,
+          image_url: payload.image_url
+        })
+        .select('*')
+        .single();
 
-  // Very old deployments may not have author_id at all. Use their legacy
-  // user_id column as a final compatibility path.
-  if(result.error && /author_id.*does not exist|author_id.*schema cache|could not find.*author_id/i.test(firstError)){
-    result = await supabase
-      .from('posts')
-      .insert({
-        user_id: user.id,
-        content: contentValue,
-        image_url: imageValue
-      })
-      .select('*')
-      .single();
+      // If author_id is not present at all, fall back to the original
+      // legacy shape (user_id only).
+      if(result.error && /author_id.*column|column.*author_id.*does not exist/i.test(result.error.message || '')){
+        result = await supabase
+          .from('posts')
+          .insert({
+            user_id: user.id,
+            content: payload.content,
+            image_url: payload.image_url
+          })
+          .select('*')
+          .single();
+      }
+    } else if(authorColumnMissing){
+      result = await supabase
+        .from('posts')
+        .insert({
+          user_id: user.id,
+          content: payload.content,
+          image_url: payload.image_url
+        })
+        .select('*')
+        .single();
+    }
   }
 
   if(result.error) throw new Error(errorMessage(result.error, 'Could not publish post'));

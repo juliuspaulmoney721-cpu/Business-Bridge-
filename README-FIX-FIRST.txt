@@ -1,16 +1,18 @@
-PIXORA — CLEAN REPLACEMENT BUILD
+PIXORA — CLEAN REPAIR BUILD v10
 
-This ZIP is the current Pixora source, repaired to use the real Supabase backend.
+THIS IS A REBUILT REPAIR PACKAGE, NOT THE PREVIOUS ZIP.
 
-1. Replace ALL files in the GitHub repository with the files from this ZIP.
-2. In Supabase SQL Editor, run schema.sql ONCE. It repairs posts.user_id/author_id and removes the recursive messaging RLS policies.
-3. Do NOT delete your Supabase project or tables.
-4. After GitHub Pages publishes, hard-refresh the site. The service-worker cache is v8.
+What changed in this build:
+- createPost now handles the old posts.user_id NOT NULL schema and the new posts.author_id schema.
+- The database repair removes old public RLS policies before installing the non-recursive messaging policies.
+- Service worker cache is v10 and deletes previous Pixora caches so old JavaScript is not reused.
+- schema.sql migrates posts.user_id into posts.author_id and repairs the conversation_members recursion problem.
 
-POSTING FIX:
-The app now sends the authenticated user's ID to both author_id and the legacy user_id when publishing. This prevents the old NOT NULL user_id error even if the database migration has not been applied yet. Once schema.sql is run, user_id is removed and the app uses author_id.
+Do this in order:
+1. Replace ALL files in the GitHub repository with these files.
+2. In Supabase SQL Editor, open schema.sql and RUN it once.
+3. Do NOT delete the Supabase project or the existing tables.
+4. Wait for GitHub Pages to publish.
+5. Open Pixora again and test Create -> Publish post.
 
-MESSAGING FIX:
-schema.sql replaces the recursive conversation_members RLS policies with a security-definer membership check. Run schema.sql before testing Messages.
-
-Supabase project URL is already configured in supabase.js.
+If publishing still fails, the exact Supabase error shown on screen is the next thing to fix; do not delete tables or create random new SQL tabs.
