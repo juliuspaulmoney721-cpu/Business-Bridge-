@@ -1,30 +1,36 @@
-PIXORA - GITHUB + SUPABASE
+PIXORA — REAL GITHUB + SUPABASE VERSION
 
-This build keeps Pixora as a normal code project for GitHub Pages. No Lovable or Hercules is required.
+This version removes the old browser-local fake/demo data layer.
 
-IMPORTANT: Messaging and in-app notifications need the Supabase database schema.
+REAL FEATURES INCLUDED
+- Supabase authentication
+- Real profiles stored in public.profiles
+- Real search from Supabase profiles
+- Real follows stored in public.follows
+- Real posts stored in public.posts
+- Real post likes stored in public.post_likes
+- Real photo uploads through Supabase Storage
+- Real stories stored in public.stories and expire after 24 hours
+- Real conversations stored in public.messages
+- Realtime chat updates through Supabase Realtime
+- Real in-app notifications stored in public.notifications
+- Notifications for messages, follows and likes
+- Unread message/notification badges
+- Profile editing with real database updates
+- Supabase logout
 
-ONE-TIME SETUP
-1. Open your Supabase project.
-2. Open SQL Editor.
-3. Open schema.sql from this ZIP.
-4. Paste the whole file into SQL Editor.
-5. Run it once.
-6. Log out and log back into each Pixora account.
-7. Go to Search, find the other account, tap Message, and send a message.
+IMPORTANT FIRST SETUP
+1. Upload these files to the GitHub repository used by Pixora.
+2. Open Supabase SQL Editor.
+3. Copy ALL of schema.sql into the SQL Editor and run it once.
+4. Make sure Supabase Auth email confirmation is configured the way you want.
+5. Log out and log back in to Pixora after the database setup.
+6. If accounts already existed before this version, log into each account once so the app can create/repair its profile record.
 
-The schema creates:
-- profiles
-- messages
-- notifications
-- follows
-- Row Level Security policies
-- automatic profile creation for new Auth accounts
-- automatic notification when a message is sent
-- automatic notification when someone follows another user
-- Realtime for messages and notifications
+NO FAKE DATA
+The new core pages do not use localStorage for users, follows, posts, messages or notifications. Those records come from Supabase.
 
-WHY THIS IS REQUIRED
-A GitHub Pages website cannot store messages between two different email accounts by itself. The shared Supabase database is what makes messages and notifications appear on both accounts/devices.
+SUPABASE PROJECT
+The existing project URL/key in supabase.js are preserved from the supplied Pixora project.
 
-If you see "User not found" before running schema.sql, that means the account exists in Supabase Auth but does not yet have a public Pixora profile row. Running schema.sql and logging into each account fixes that.
+The GitHub site still needs the Supabase database/schema to be initialized. A ZIP file alone cannot create database tables in your Supabase project.
