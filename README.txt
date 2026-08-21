@@ -19,3 +19,10 @@ Open the HTTPS site in Chrome and use Install app / Add to Home screen when offe
 
 NATIVE APK/IPA:
 A native Android/iOS build still requires a platform build environment (Android SDK/Gradle for APK/AAB; Xcode/macOS for iOS). This package is ready to be wrapped with Capacitor when that build environment is available.
+
+
+PIXORA BACKEND SETUP
+1. Open Supabase SQL Editor for the project configured in supabase.js.
+2. Run schema.sql once.
+3. The app then uses Supabase for profiles, messages and in-app notifications. If the tables are not installed, the app falls back to local browser storage for testing on one device.
+4. Supabase Auth email confirmation is controlled by Authentication settings; the app cannot force an email if the project's email provider/confirmation settings are not configured.

@@ -1,18 +1,9 @@
-# Pixora rebuild status — v2
+# Pixora rebuild status
 
-This package is the updated Pixora codebase for the GitHub deployment.
+This is the existing Pixora codebase updated in place.
 
-Implemented in this version:
-- Consistent Pixora desktop/mobile header navigation across the app.
-- Consistent five-item mobile bottom navigation.
-- Active navigation states for Home, Search, Create, Messages, Notifications and Profile.
-- Responsive Pixora styling matching the supplied reference screenshots more closely.
-- Profile avatar is reused in the header when available.
-- Avatar account menu with Profile and Log out actions.
-- Supabase logout remains enabled and local Pixora identity data is cleared on logout.
-- Existing Supabase login/signup integration preserved.
-- Existing local posts, profiles, follows, likes and profile editing preserved.
-- Existing Create Post/Story, Search, Messages, Notifications and Profile pages preserved.
-- Fixed the malformed script closing tag in Search.
+Included: existing pages/UI, corrected Supabase client, Supabase login/signup handlers, persistent auth settings, shared logout across app pages, and the existing local data layer preserved for compatibility.
 
-Reference screenshots are used as the product/UI reference. Pixora remains its own source code and identity.
+Next: Supabase profiles, posts/media, likes/comments, follows, stories/reels, messaging, notifications, and search.
+
+The Hercules screenshots are the product reference only; Pixora keeps its own identity and source code.
