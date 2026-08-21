@@ -1,12 +1,7 @@
 {
-  "name": "pixora--main",
-  "version": "1.0.0",
-  "main": "supabase.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  "name": "pixora-main",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {"test":"node test.mjs"}
 }

@@ -1,9 +1,18 @@
 # Pixora rebuild status
 
-This is the existing Pixora codebase updated in place.
+This build uses the existing Pixora interface and a real Supabase data layer.
 
-Included: existing pages/UI, corrected Supabase client, Supabase login/signup handlers, persistent auth settings, shared logout across app pages, and the existing local data layer preserved for compatibility.
+## Repaired
+- Auth/profile creation and profile lookup
+- Search by name/username
+- Posts and image storage
+- Stories
+- Likes and follows
+- Real direct messages
+- In-app notifications for messages, follows and likes
+- Unread badges
+- Realtime chat and notification updates
+- Database repair SQL for missing columns, foreign keys, policies, triggers, storage and realtime
 
-Next: Supabase profiles, posts/media, likes/comments, follows, stories/reels, messaging, notifications, and search.
-
-The Hercules screenshots are the product reference only; Pixora keeps its own identity and source code.
+## Important
+Run `schema.sql` once in the Supabase SQL Editor before testing the repaired build. The public browser key cannot create the database objects itself.
