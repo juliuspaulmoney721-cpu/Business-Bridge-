@@ -1,9 +1,12 @@
--- PIXORA DATABASE
--- This schema matches the Pixora frontend in this ZIP.
--- Run once in Supabase SQL Editor.
+-- PIXORA — SAFE DATABASE REPAIR / MIGRATION
+-- Run this ONCE in the Supabase SQL Editor.
+-- It keeps existing data and fixes the old schema/policy problems.
 
-create extension if not exists "pgcrypto";
+create extension if not exists pgcrypto;
 
+-- =========================================================
+-- 1. PROFILES
+-- =========================================================
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   name text,
@@ -22,10 +25,14 @@ alter table public.profiles add column if not exists created_at timestamptz defa
 alter table public.profiles add column if not exists updated_at timestamptz default now();
 
 create or replace function public.handle_new_user()
-returns trigger language plpgsql security definer set search_path=public as $$
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
 begin
   insert into public.profiles(id,name,username,avatar_url,bio)
-  values(
+  values (
     new.id,
     coalesce(new.raw_user_meta_data->>'name', new.raw_user_meta_data->>'full_name', split_part(coalesce(new.email,''),'@',1), 'Pixora User'),
     coalesce(new.raw_user_meta_data->>'username', split_part(coalesce(new.email,''),'@',1), 'pixorauser'),
@@ -38,8 +45,13 @@ end;
 $$;
 
 drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created after insert on auth.users for each row execute function public.handle_new_user();
+create trigger on_auth_user_created
+after insert on auth.users
+for each row execute function public.handle_new_user();
 
+-- =========================================================
+-- 2. POSTS — MIGRATE OLD user_id TO author_id
+-- =========================================================
 create table if not exists public.posts (
   id uuid primary key default gen_random_uuid(),
   author_id uuid,
@@ -47,45 +59,67 @@ create table if not exists public.posts (
   image_url text,
   created_at timestamptz not null default now()
 );
+
 alter table public.posts add column if not exists author_id uuid;
 alter table public.posts add column if not exists content text;
 alter table public.posts add column if not exists image_url text;
 alter table public.posts add column if not exists created_at timestamptz default now();
 
--- Migrate the old Pixora posts column if it still exists.
--- The previous build used posts.user_id; the repaired frontend uses posts.author_id.
+-- Older Pixora builds used posts.user_id. If it still exists, move its values.
 do $$
 begin
   if exists (
     select 1 from information_schema.columns
-    where table_schema='public' and table_name='posts'
-      and column_name='user_id' and data_type='uuid'
+    where table_schema='public' and table_name='posts' and column_name='user_id'
   ) then
-    update public.posts p
-    set author_id = p.user_id
-    where p.author_id is null
-      and exists (select 1 from public.profiles pr where pr.id = p.user_id);
-
-    alter table public.posts drop column if exists user_id;
+    execute 'update public.posts p set author_id = p.user_id where p.author_id is null and p.user_id is not null';
+    execute 'alter table public.posts drop column user_id';
   end if;
 end $$;
 
-alter table public.posts drop constraint if exists posts_author_id_fkey;
+-- Remove old author foreign keys so the relationship can be recreated cleanly.
+do $$
+declare r record;
+begin
+  for r in
+    select tc.constraint_name
+    from information_schema.table_constraints tc
+    join information_schema.constraint_column_usage ccu
+      on ccu.constraint_name=tc.constraint_name
+     and ccu.table_schema=tc.table_schema
+    where tc.table_schema='public'
+      and tc.table_name='posts'
+      and tc.constraint_type='FOREIGN KEY'
+      and ccu.column_name='author_id'
+  loop
+    execute format('alter table public.posts drop constraint if exists %I', r.constraint_name);
+  end loop;
+end $$;
+
+-- Existing bad/orphaned rows must not prevent the correct FK from being created.
+update public.posts p
+set author_id = null
+where author_id is not null
+  and not exists (select 1 from public.profiles pr where pr.id=p.author_id);
+
 alter table public.posts
   add constraint posts_author_id_fkey
   foreign key (author_id) references public.profiles(id) on delete cascade;
 
+-- =========================================================
+-- 3. FOLLOWS
+-- =========================================================
 create table if not exists public.follows (
   id uuid primary key default gen_random_uuid(),
   follower_id uuid not null references public.profiles(id) on delete cascade,
   following_id uuid not null references public.profiles(id) on delete cascade,
   created_at timestamptz not null default now(),
-  unique(follower_id,following_id)
+  unique(follower_id, following_id)
 );
 
-alter table public.follows add column if not exists id uuid default gen_random_uuid();
-alter table public.follows add column if not exists created_at timestamptz default now();
-
+-- =========================================================
+-- 4. MESSAGING TABLES
+-- =========================================================
 create table if not exists public.conversations (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
@@ -109,6 +143,9 @@ create table if not exists public.messages (
   read_at timestamptz
 );
 
+-- =========================================================
+-- 5. NOTIFICATIONS
+-- =========================================================
 create table if not exists public.notifications (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles(id) on delete cascade,
@@ -122,53 +159,92 @@ create table if not exists public.notifications (
   created_at timestamptz not null default now()
 );
 
+-- =========================================================
+-- 6. NOTIFICATION TRIGGERS
+-- =========================================================
 create or replace function public.create_follow_notification()
-returns trigger language plpgsql security definer set search_path=public as $$
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
 declare follower_name text;
 begin
-  select coalesce(name,username,'Someone') into follower_name from public.profiles where id=new.follower_id;
+  select coalesce(name,username,'Someone') into follower_name
+  from public.profiles where id=new.follower_id;
+
   insert into public.notifications(user_id,actor_id,type,title,message)
-  values(new.following_id,new.follower_id,'follow','New follower',follower_name||' started following you.');
+  values(new.following_id,new.follower_id,'follow','New follower',follower_name || ' started following you.');
   return new;
 end;
 $$;
 
 drop trigger if exists follow_notification_trigger on public.follows;
-create trigger follow_notification_trigger after insert on public.follows for each row execute function public.create_follow_notification();
+create trigger follow_notification_trigger
+after insert on public.follows
+for each row execute function public.create_follow_notification();
 
 create or replace function public.create_message_notification()
-returns trigger language plpgsql security definer set search_path=public as $$
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
 declare receiver_id uuid; sender_name text;
 begin
   select cm.user_id into receiver_id
   from public.conversation_members cm
-  where cm.conversation_id=new.conversation_id and cm.user_id<>new.sender_id
+  where cm.conversation_id=new.conversation_id
+    and cm.user_id<>new.sender_id
   limit 1;
-  select coalesce(name,username,'Someone') into sender_name from public.profiles where id=new.sender_id;
+
+  select coalesce(name,username,'Someone') into sender_name
+  from public.profiles where id=new.sender_id;
+
   if receiver_id is not null then
     insert into public.notifications(user_id,actor_id,type,title,message,conversation_id)
-    values(receiver_id,new.sender_id,'message','New message',sender_name||' sent you a message.',new.conversation_id);
+    values(receiver_id,new.sender_id,'message','New message',sender_name || ' sent you a message.',new.conversation_id);
   end if;
   return new;
 end;
 $$;
 
 drop trigger if exists message_notification_trigger on public.messages;
-create trigger message_notification_trigger after insert on public.messages for each row execute function public.create_message_notification();
+create trigger message_notification_trigger
+after insert on public.messages
+for each row execute function public.create_message_notification();
 
+-- =========================================================
+-- 7. STORAGE
+-- =========================================================
 insert into storage.buckets(id,name,public)
 values('posts','posts',true)
 on conflict(id) do update set public=true;
 
 drop policy if exists "Anyone can view post images" on storage.objects;
-create policy "Anyone can view post images" on storage.objects for select using(bucket_id='posts');
 drop policy if exists "Authenticated users can upload post images" on storage.objects;
-create policy "Authenticated users can upload post images" on storage.objects for insert to authenticated with check(bucket_id='posts');
 drop policy if exists "Users can update their post images" on storage.objects;
-create policy "Users can update their post images" on storage.objects for update to authenticated using(bucket_id='posts' and owner_id=auth.uid()::text);
 drop policy if exists "Users can delete their post images" on storage.objects;
-create policy "Users can delete their post images" on storage.objects for delete to authenticated using(bucket_id='posts' and owner_id=auth.uid()::text);
 
+create policy "Anyone can view post images"
+on storage.objects for select
+using(bucket_id='posts');
+
+create policy "Authenticated users can upload post images"
+on storage.objects for insert to authenticated
+with check(bucket_id='posts');
+
+create policy "Users can update their post images"
+on storage.objects for update to authenticated
+using(bucket_id='posts' and owner_id=auth.uid()::text);
+
+create policy "Users can delete their post images"
+on storage.objects for delete to authenticated
+using(bucket_id='posts' and owner_id=auth.uid()::text);
+
+-- =========================================================
+-- 8. RLS
+-- =========================================================
 alter table public.profiles enable row level security;
 alter table public.posts enable row level security;
 alter table public.follows enable row level security;
@@ -177,96 +253,145 @@ alter table public.conversation_members enable row level security;
 alter table public.messages enable row level security;
 alter table public.notifications enable row level security;
 
-drop policy if exists "Profiles are publicly readable" on public.profiles;
-create policy "Profiles are publicly readable" on public.profiles for select using(true);
-drop policy if exists "Users can insert own profile" on public.profiles;
-create policy "Users can insert own profile" on public.profiles for insert to authenticated with check(id=auth.uid());
-drop policy if exists "Users can update own profile" on public.profiles;
-create policy "Users can update own profile" on public.profiles for update to authenticated using(id=auth.uid()) with check(id=auth.uid());
+-- Remove every old policy on these tables. This prevents old Pixora policies
+-- from surviving under different names.
+do $$
+declare r record;
+begin
+  for r in
+    select schemaname, tablename, policyname
+    from pg_policies
+    where schemaname='public'
+      and tablename in ('profiles','posts','follows','conversations','conversation_members','messages','notifications')
+  loop
+    execute format('drop policy if exists %I on %I.%I', r.policyname, r.schemaname, r.tablename);
+  end loop;
+end $$;
 
-drop policy if exists "Posts are publicly readable" on public.posts;
-create policy "Posts are publicly readable" on public.posts for select using(true);
-drop policy if exists "Users can create their own posts" on public.posts;
-create policy "Users can create their own posts" on public.posts for insert to authenticated with check(author_id=auth.uid());
-drop policy if exists "Users can update their own posts" on public.posts;
-create policy "Users can update their own posts" on public.posts for update to authenticated using(author_id=auth.uid()) with check(author_id=auth.uid());
-drop policy if exists "Users can delete their own posts" on public.posts;
-create policy "Users can delete their own posts" on public.posts for delete to authenticated using(author_id=auth.uid());
-
-drop policy if exists "Anyone can see follows" on public.follows;
-create policy "Anyone can see follows" on public.follows for select using(true);
-drop policy if exists "Users can follow" on public.follows;
-create policy "Users can follow" on public.follows for insert to authenticated with check(follower_id=auth.uid());
-drop policy if exists "Users can unfollow" on public.follows;
-create policy "Users can unfollow" on public.follows for delete to authenticated using(follower_id=auth.uid());
-
--- RLS helper. It is SECURITY DEFINER so checking membership does not
--- recursively evaluate the conversation_members SELECT policy.
+-- =========================================================
+-- 9. SAFE MEMBERSHIP CHECK — NO RLS RECURSION
+-- =========================================================
 create or replace function public.is_conversation_member(p_conversation_id uuid, p_user_id uuid)
 returns boolean
 language sql
 security definer
 set search_path = public
+set row_security = off
 as $$
-  select exists(
+  select exists (
     select 1
     from public.conversation_members
-    where conversation_id = p_conversation_id
-      and user_id = p_user_id
+    where conversation_id=p_conversation_id
+      and user_id=p_user_id
   );
 $$;
 
-drop policy if exists "Members can view conversations" on public.conversations;
+revoke all on function public.is_conversation_member(uuid,uuid) from public;
+grant execute on function public.is_conversation_member(uuid,uuid) to authenticated;
+
+-- =========================================================
+-- 10. PROFILE POLICIES
+-- =========================================================
+create policy "Profiles are publicly readable"
+on public.profiles for select
+using(true);
+
+create policy "Users can insert own profile"
+on public.profiles for insert to authenticated
+with check(id=auth.uid());
+
+create policy "Users can update own profile"
+on public.profiles for update to authenticated
+using(id=auth.uid()) with check(id=auth.uid());
+
+-- =========================================================
+-- 11. POST POLICIES
+-- =========================================================
+create policy "Posts are publicly readable"
+on public.posts for select
+using(true);
+
+create policy "Users can create their own posts"
+on public.posts for insert to authenticated
+with check(author_id=auth.uid());
+
+create policy "Users can update their own posts"
+on public.posts for update to authenticated
+using(author_id=auth.uid()) with check(author_id=auth.uid());
+
+create policy "Users can delete their own posts"
+on public.posts for delete to authenticated
+using(author_id=auth.uid());
+
+-- =========================================================
+-- 12. FOLLOW POLICIES
+-- =========================================================
+create policy "Anyone can see follows"
+on public.follows for select
+using(true);
+
+create policy "Users can follow"
+on public.follows for insert to authenticated
+with check(follower_id=auth.uid());
+
+create policy "Users can unfollow"
+on public.follows for delete to authenticated
+using(follower_id=auth.uid());
+
+-- =========================================================
+-- 13. CONVERSATION POLICIES
+-- =========================================================
 create policy "Members can view conversations"
-on public.conversations
-for select to authenticated
-using (public.is_conversation_member(id, auth.uid()));
+on public.conversations for select to authenticated
+using(public.is_conversation_member(id,auth.uid()));
 
-drop policy if exists "Authenticated users can create conversations" on public.conversations;
 create policy "Authenticated users can create conversations"
-on public.conversations
-for insert to authenticated
-with check (true);
+on public.conversations for insert to authenticated
+with check(true);
 
-drop policy if exists "Members can view members" on public.conversation_members;
+-- IMPORTANT: this policy DOES NOT query conversation_members directly.
+-- That is what caused the infinite recursion error.
 create policy "Members can view members"
-on public.conversation_members
-for select to authenticated
-using (public.is_conversation_member(conversation_id, auth.uid()));
+on public.conversation_members for select to authenticated
+using(public.is_conversation_member(conversation_id,auth.uid()));
 
-drop policy if exists "Authenticated users can add conversation members" on public.conversation_members;
 create policy "Authenticated users can add conversation members"
-on public.conversation_members
-for insert to authenticated
-with check (true);
+on public.conversation_members for insert to authenticated
+with check(true);
 
-drop policy if exists "Conversation members can read messages" on public.messages;
+-- =========================================================
+-- 14. MESSAGE POLICIES
+-- =========================================================
 create policy "Conversation members can read messages"
-on public.messages
-for select to authenticated
-using (public.is_conversation_member(conversation_id, auth.uid()));
+on public.messages for select to authenticated
+using(public.is_conversation_member(conversation_id,auth.uid()));
 
-drop policy if exists "Users can send messages" on public.messages;
 create policy "Users can send messages"
-on public.messages
-for insert to authenticated
-with check (
-  sender_id = auth.uid()
-  and public.is_conversation_member(conversation_id, auth.uid())
+on public.messages for insert to authenticated
+with check(
+  sender_id=auth.uid()
+  and public.is_conversation_member(conversation_id,auth.uid())
 );
 
-drop policy if exists "Recipients can update read status" on public.messages;
-create policy "Recipients can update read status"
-on public.messages
-for update to authenticated
-using (public.is_conversation_member(conversation_id, auth.uid()))
-with check (public.is_conversation_member(conversation_id, auth.uid()));
+create policy "Conversation members can update messages"
+on public.messages for update to authenticated
+using(public.is_conversation_member(conversation_id,auth.uid()))
+with check(public.is_conversation_member(conversation_id,auth.uid()));
 
-drop policy if exists "Users can read their notifications" on public.notifications;
-create policy "Users can read their notifications" on public.notifications for select to authenticated using(user_id=auth.uid());
-drop policy if exists "Users can update their notifications" on public.notifications;
-create policy "Users can update their notifications" on public.notifications for update to authenticated using(user_id=auth.uid()) with check(user_id=auth.uid());
+-- =========================================================
+-- 15. NOTIFICATION POLICIES
+-- =========================================================
+create policy "Users can read their notifications"
+on public.notifications for select to authenticated
+using(user_id=auth.uid());
 
+create policy "Users can update their notifications"
+on public.notifications for update to authenticated
+using(user_id=auth.uid()) with check(user_id=auth.uid());
+
+-- =========================================================
+-- 16. INDEXES + REALTIME
+-- =========================================================
 create index if not exists posts_author_id_idx on public.posts(author_id);
 create index if not exists posts_created_at_idx on public.posts(created_at desc);
 create index if not exists profiles_username_idx on public.profiles(username);
@@ -280,9 +405,14 @@ create index if not exists notifications_created_at_idx on public.notifications(
 alter table public.messages replica identity full;
 alter table public.notifications replica identity full;
 
-do $$ begin
-  if not exists(select 1 from pg_publication_tables where pubname='supabase_realtime' and schemaname='public' and tablename='messages') then alter publication supabase_realtime add table public.messages; end if;
-  if not exists(select 1 from pg_publication_tables where pubname='supabase_realtime' and schemaname='public' and tablename='notifications') then alter publication supabase_realtime add table public.notifications; end if;
+do $$
+begin
+  if not exists(select 1 from pg_publication_tables where pubname='supabase_realtime' and schemaname='public' and tablename='messages') then
+    alter publication supabase_realtime add table public.messages;
+  end if;
+  if not exists(select 1 from pg_publication_tables where pubname='supabase_realtime' and schemaname='public' and tablename='notifications') then
+    alter publication supabase_realtime add table public.notifications;
+  end if;
 end $$;
 
 notify pgrst, 'reload schema';

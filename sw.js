@@ -1,4 +1,4 @@
-const CACHE = 'pixora-v5';
+const CACHE = 'pixora-v6';
 const ASSETS = [
   './','index.html','dashboard.html','search.html','create.html','messages.html','chat.html',
   'notifications.html','profile.html','login.html','signup.html','styles.css','supabase.js',
@@ -22,8 +22,11 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        const copy = response.clone();
-        caches.open(CACHE).then(cache => cache.put(event.request, copy));
+        const type = response.headers.get('content-type') || '';
+        if(!type.includes('text/html') && !type.includes('javascript')){
+          const copy = response.clone();
+          caches.open(CACHE).then(cache => cache.put(event.request, copy));
+        }
         return response;
       })
       .catch(() => caches.match(event.request))
