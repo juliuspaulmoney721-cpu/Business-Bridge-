@@ -189,6 +189,7 @@ returns trigger
 language plpgsql
 security definer
 set search_path = public
+set row_security = off
 as $$
 declare receiver_id uuid; sender_name text;
 begin
@@ -289,6 +290,76 @@ $$;
 revoke all on function public.is_conversation_member(uuid,uuid) from public;
 grant execute on function public.is_conversation_member(uuid,uuid) to authenticated;
 
+-- Client code never needs to query every conversation member directly.
+-- These SECURITY DEFINER RPCs read the membership table with RLS bypassed,
+-- which completely removes the self-referencing policy path that caused
+-- the old "infinite recursion detected in policy for conversation_members" error.
+create or replace function public.get_my_conversation_members(p_user_id uuid)
+returns table(conversation_id uuid, user_id uuid)
+language sql
+security definer
+set search_path = public
+set row_security = off
+as $$
+  select cm.conversation_id, cm.user_id
+  from public.conversation_members cm
+  where cm.conversation_id in (
+    select mine.conversation_id
+    from public.conversation_members mine
+    where mine.user_id = p_user_id
+  );
+$$;
+
+revoke all on function public.get_my_conversation_members(uuid) from public;
+grant execute on function public.get_my_conversation_members(uuid) to authenticated;
+
+create or replace function public.get_or_create_direct_conversation(p_other_user_id uuid)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+set row_security = off
+as $$
+declare
+  me uuid := auth.uid();
+  existing_id uuid;
+  new_id uuid;
+begin
+  if me is null then
+    raise exception 'Not authenticated';
+  end if;
+  if p_other_user_id is null or p_other_user_id = me then
+    raise exception 'Invalid conversation recipient';
+  end if;
+
+  select c.id into existing_id
+  from public.conversations c
+  join public.conversation_members mine
+    on mine.conversation_id = c.id and mine.user_id = me
+  join public.conversation_members other
+    on other.conversation_id = c.id and other.user_id = p_other_user_id
+  where (
+    select count(*)
+    from public.conversation_members all_members
+    where all_members.conversation_id = c.id
+  ) = 2
+  order by c.created_at
+  limit 1;
+
+  if existing_id is not null then
+    return existing_id;
+  end if;
+
+  insert into public.conversations default values returning id into new_id;
+  insert into public.conversation_members(conversation_id,user_id)
+  values (new_id,me),(new_id,p_other_user_id);
+  return new_id;
+end;
+$$;
+
+revoke all on function public.get_or_create_direct_conversation(uuid) from public;
+grant execute on function public.get_or_create_direct_conversation(uuid) to authenticated;
+
 -- =========================================================
 -- 10. PROFILE POLICIES
 -- =========================================================
@@ -349,15 +420,18 @@ create policy "Authenticated users can create conversations"
 on public.conversations for insert to authenticated
 with check(true);
 
--- IMPORTANT: this policy DOES NOT query conversation_members directly.
--- That is what caused the infinite recursion error.
-create policy "Members can view members"
+-- Keep this policy intentionally simple. It only exposes the caller's own
+-- membership row. The app uses SECURITY DEFINER RPCs above when it needs the
+-- other member rows, so this policy can never recurse into itself.
+create policy "Users can view their own membership rows"
 on public.conversation_members for select to authenticated
-using(public.is_conversation_member(conversation_id,auth.uid()));
+using(user_id=auth.uid());
 
-create policy "Authenticated users can add conversation members"
+-- Direct member insertion is not needed by the browser.
+-- get_or_create_direct_conversation() inserts both members securely.
+create policy "Users can add their own membership rows"
 on public.conversation_members for insert to authenticated
-with check(true);
+with check(user_id=auth.uid());
 
 -- =========================================================
 -- 14. MESSAGE POLICIES

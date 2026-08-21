@@ -1,4 +1,4 @@
-const CACHE = 'pixora-v10';
+const CACHE = 'pixora-v11';
 const OLD_CACHES = ['pixora-v1','pixora-v2','pixora-v3','pixora-v4','pixora-v5','pixora-v6','pixora-v7','pixora-v8','pixora-v9'];
 const ASSETS = [
   './','index.html','dashboard.html','search.html','create.html','messages.html','chat.html',

@@ -33,7 +33,8 @@ for(const bad of forbidden){
 for(const requiredText of [
   "from('posts')",
   "from('follows')",
-  "from('conversation_members')",
+  "rpc('get_my_conversation_members'",
+  "rpc('get_or_create_direct_conversation'",
   "from('messages')",
   "from('notifications')",
   "from('posts')"
@@ -53,7 +54,7 @@ if(!api2.includes('author_id: user.id') || !api2.includes('user_id: user.id')){
   process.exit(1);
 }
 const sw = fs.readFileSync(root + 'sw.js','utf8');
-if(!sw.includes("pixora-v10") || !sw.includes("key.startsWith('pixora-')")){
+if(!sw.includes("pixora-v11") || !sw.includes("key.startsWith('pixora-')")){
   console.error('Cache-busting service worker is missing');
   process.exit(1);
 }
@@ -63,3 +64,12 @@ if(!schema.includes("drop policy if exists") || !schema.includes('set row_securi
   process.exit(1);
 }
 console.log('Pixora repair regression checks passed.');
+if(!api2.includes("rpc('get_or_create_direct_conversation'") || !api2.includes("rpc('get_my_conversation_members'")){
+  console.error('Messaging RPC repair is missing');
+  process.exit(1);
+}
+if(!schema.includes('get_or_create_direct_conversation') || !schema.includes('get_my_conversation_members') || !schema.includes('using(user_id=auth.uid())')){
+  console.error('Messaging RPC functions are missing from schema');
+  process.exit(1);
+}
+

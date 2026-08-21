@@ -310,60 +310,25 @@ async function getOrCreateConversation(otherId){
   if(!me) throw new Error('Please log in first.');
   if(me.id === otherId) throw new Error('You cannot message yourself.');
 
-  const { data: mine, error: mineError } = await supabase
-    .from('conversation_members')
-    .select('conversation_id')
-    .eq('user_id', me.id);
-  if(mineError) throw new Error(errorMessage(mineError, 'Could not load your conversations'));
-
-  const ids = (mine || []).map(x => x.conversation_id);
-  if(ids.length){
-    const { data: members, error } = await supabase
-      .from('conversation_members')
-      .select('conversation_id,user_id')
-      .in('conversation_id', ids);
-    if(error) throw new Error(errorMessage(error, 'Could not load conversation members'));
-
-    const match = (members || []).find(x => x.user_id === otherId);
-    if(match) return match.conversation_id;
-  }
-
-  const { data: conversation, error: conversationError } = await supabase
-    .from('conversations')
-    .insert({})
-    .select('id')
-    .single();
-  if(conversationError) throw new Error(errorMessage(conversationError, 'Could not create conversation'));
-
-  const { error: membersError } = await supabase
-    .from('conversation_members')
-    .insert([
-      { conversation_id: conversation.id, user_id: me.id },
-      { conversation_id: conversation.id, user_id: otherId }
-    ]);
-  if(membersError) throw new Error(errorMessage(membersError, 'Could not add conversation members'));
-
-  return conversation.id;
+  const { data, error } = await supabase.rpc('get_or_create_direct_conversation', {
+    p_other_user_id: otherId
+  });
+  if(error) throw new Error(errorMessage(error, 'Could not open this conversation'));
+  if(!data) throw new Error('Could not open this conversation.');
+  return data;
 }
 
 export async function listConversations(){
   const me = await currentUser();
   if(!me) throw new Error('Please log in first.');
 
-  const { data: mine, error } = await supabase
-    .from('conversation_members')
-    .select('conversation_id')
-    .eq('user_id', me.id);
+  const { data: members, error } = await supabase.rpc('get_my_conversation_members', {
+    p_user_id: me.id
+  });
   if(error) throw new Error(errorMessage(error, 'Could not load conversations'));
 
-  const conversationIds = [...new Set((mine || []).map(x => x.conversation_id))];
+  const conversationIds = [...new Set((members || []).map(x => x.conversation_id))];
   if(!conversationIds.length) return [];
-
-  const { data: members, error: membersError } = await supabase
-    .from('conversation_members')
-    .select('conversation_id,user_id')
-    .in('conversation_id', conversationIds);
-  if(membersError) throw new Error(errorMessage(membersError, 'Could not load conversation members'));
 
   const otherIds = [...new Set((members || []).filter(m => m.user_id !== me.id).map(m => m.user_id))];
   const profiles = await getProfilesByIds(otherIds);
