@@ -1,27 +1,414 @@
 import { supabase } from './supabase.js';
 
-const PROFILE_FIELDS='id,name,username,avatar_url,bio,created_at';
-const err=(e,f)=>e?.message?`${f}: ${e.message}`:f;
-const clean=u=>String(u||'pixorauser').replace(/^@/,'').toLowerCase().replace(/[^a-z0-9._]/g,'').slice(0,30)||'pixorauser';
+const PROFILE_FIELDS = 'id,name,username,avatar_url,bio,created_at,updated_at';
 
-export async function currentUser(){const {data,error}=await supabase.auth.getUser();if(error)throw error;return data.user;}
-export async function ensureProfile(user){if(!user)return null;const m=user.user_metadata||{};let {data,error}=await supabase.from('profiles').select(PROFILE_FIELDS).eq('id',user.id).maybeSingle();if(error)throw new Error(err(error,'Could not load your Pixora profile'));if(data)return data;let base=clean(m.username||m.name||user.email?.split('@')[0]);let username=base;for(let i=0;i<50;i++){let q=await supabase.from('profiles').select('id').eq('username',username).maybeSingle();if(q.error)throw new Error(err(q.error,'Could not check username'));if(!q.data)break;username=clean(`${base.slice(0,24)}_${Math.floor(1000+Math.random()*9000)}`)}let p={id:user.id,name:m.name||m.full_name||user.email?.split('@')[0]||'Pixora User',username,bio:m.bio||'',avatar_url:m.avatar_url||m.avatar||''};let r=await supabase.from('profiles').upsert(p,{onConflict:'id'}).select(PROFILE_FIELDS).single();if(r.error)throw new Error(err(r.error,'Could not create your Pixora profile'));return r.data;}
-export async function myProfile(){return ensureProfile(await currentUser())}
-export async function getProfileByUsername(username){let {data,error}=await supabase.from('profiles').select(PROFILE_FIELDS).eq('username',clean(username)).maybeSingle();if(error)throw new Error(err(error,'Could not load this Pixora profile'));return data;}
-export async function searchProfiles(q=''){let query=supabase.from('profiles').select(PROFILE_FIELDS).order('name').limit(50);let v=String(q||'').trim().replace(/[%(),]/g,'');if(v)query=query.or(`name.ilike.%${v}%,username.ilike.%${v}%`);let {data,error}=await query;if(error)throw new Error(err(error,'Could not search Pixora users'));return data||[];}
-export async function updateProfile(v){let u=await currentUser();if(!u)throw new Error('Please log in first.');let r=await supabase.from('profiles').update({name:String(v.name||'Pixora User').trim()||'Pixora User',username:clean(v.username),bio:String(v.bio||'').trim(),avatar_url:v.avatar_url||''}).eq('id',u.id).select(PROFILE_FIELDS).single();if(r.error)throw new Error(err(r.error,'Could not update your Pixora profile'));return r.data;}
-export async function uploadImage(file,folder='posts'){let u=await currentUser();if(!u)throw new Error('Please log in first.');if(!file)throw new Error('Choose an image first.');let ext=(file.name?.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';let path=`${u.id}/${folder}/${crypto.randomUUID()}.${ext}`;let {error}=await supabase.storage.from('posts').upload(path,file,{upsert:false,contentType:file.type||'image/jpeg'});if(error)throw new Error(err(error,'Image upload failed'));return supabase.storage.from('posts').getPublicUrl(path).data.publicUrl;}
-async function profiles(ids){let a=[...new Set((ids||[]).filter(Boolean))];if(!a.length)return new Map();let {data,error}=await supabase.from('profiles').select(PROFILE_FIELDS).in('id',a);if(error)throw new Error(err(error,'Could not load Pixora profiles'));return new Map((data||[]).map(p=>[p.id,p]));}
-export async function listPosts(){let {data,error}=await supabase.from('posts').select('id,author_id,content,image_url,created_at').order('created_at',{ascending:false}).limit(100);if(error)throw new Error(err(error,'Could not load Pixora posts'));let ps=await profiles((data||[]).map(x=>x.author_id));return (data||[]).map(x=>({...x,profiles:ps.get(x.author_id)||null}));}
-export async function createPost({content,imageUrl}){let u=await currentUser();if(!u)throw new Error('Please log in first.');let {data,error}=await supabase.from('posts').insert({author_id:u.id,content:content||'',image_url:imageUrl||null}).select('id,author_id,content,image_url,created_at').single();if(error)throw new Error(err(error,'Could not publish post'));return data;}
-export async function isFollowing(id){let u=await currentUser();let {data,error}=await supabase.from('follows').select('id').eq('follower_id',u.id).eq('following_id',id).maybeSingle();if(error)throw error;return !!data;}
-export async function toggleFollow(id){let u=await currentUser();if(!u)throw new Error('Please log in first.');if(u.id===id)return false;let {data,error}=await supabase.from('follows').select('id').eq('follower_id',u.id).eq('following_id',id).maybeSingle();if(error)throw error;if(data){let r=await supabase.from('follows').delete().eq('follower_id',u.id).eq('following_id',id);if(r.error)throw r.error;return false;}let r=await supabase.from('follows').insert({follower_id:u.id,following_id:id});if(r.error)throw r.error;return true;}
-export async function getCounts(id){let [a,b,c]=await Promise.all([supabase.from('follows').select('*',{count:'exact',head:true}).eq('following_id',id),supabase.from('follows').select('*',{count:'exact',head:true}).eq('follower_id',id),supabase.from('posts').select('*',{count:'exact',head:true}).eq('author_id',id)]);if(a.error)throw a.error;if(b.error)throw b.error;if(c.error)throw c.error;return {followers:a.count||0,following:b.count||0,posts:c.count||0};}
-async function findConversation(other){let me=await currentUser();let {data,error}=await supabase.from('conversation_members').select('conversation_id').eq('user_id',me.id);if(error)throw new Error(err(error,'Could not load conversations'));let ids=(data||[]).map(x=>x.conversation_id);if(!ids.length)return null;let q=await supabase.from('conversation_members').select('conversation_id').eq('user_id',other).in('conversation_id',ids);if(q.error)throw new Error(err(q.error,'Could not find this conversation'));return q.data?.[0]?.conversation_id||null;}
-async function createConversation(other){let me=await currentUser();let {data,error}=await supabase.from('conversations').insert({}).select('id').single();if(error)throw new Error(err(error,'Could not create conversation'));let r=await supabase.from('conversation_members').insert([{conversation_id:data.id,user_id:me.id},{conversation_id:data.id,user_id:other}]);if(r.error)throw new Error(err(r.error,'Could not add conversation members'));return data.id;}
-async function conversation(other){return (await findConversation(other))||await createConversation(other);}
-export async function listMessages(other){let id=await findConversation(other);if(!id)return [];let {data,error}=await supabase.from('messages').select('id,conversation_id,sender_id,content,created_at,read_at').eq('conversation_id',id).order('created_at',{ascending:true});if(error)throw new Error(err(error,'Could not load this conversation'));return data||[];}
-export async function sendMessage(recipientId,body){let me=await currentUser();if(!me)throw new Error('Please log in first.');let text=String(body||'').trim();if(!recipientId)throw new Error('Recipient not found.');if(me.id===recipientId)throw new Error('You cannot message yourself.');if(!text)return null;let {data:recipient,error:re}=await supabase.from('profiles').select('id').eq('id',recipientId).maybeSingle();if(re)throw re;if(!recipient)throw new Error('User not found.');let cid=await conversation(recipientId);let {data,error}=await supabase.from('messages').insert({conversation_id:cid,sender_id:me.id,content:text}).select('id,conversation_id,sender_id,content,created_at,read_at').single();if(error)throw new Error(err(error,'Message could not be sent'));return data;}
-export async function listNotifications(){let me=await currentUser();let {data,error}=await supabase.from('notifications').select('id,user_id,actor_id,type,title,message,post_id,conversation_id,is_read,created_at').eq('user_id',me.id).order('created_at',{ascending:false}).limit(100);if(error)throw new Error(err(error,'Could not load notifications'));let ps=await profiles((data||[]).map(x=>x.actor_id));return (data||[]).map(x=>({...x,actor:ps.get(x.actor_id)||null}));}
-export async function markNotificationsRead(){let me=await currentUser();let {error}=await supabase.from('notifications').update({is_read:true}).eq('user_id',me.id).eq('is_read',false);if(error)throw error;}
-export async function unreadCounts(){let me=await currentUser();let {count,error}=await supabase.from('notifications').select('*',{count:'exact',head:true}).eq('user_id',me.id).eq('is_read',false);if(error)throw error;return {notifications:count||0,messages:0};}
+function cleanUsername(value){
+  return String(value || 'pixorauser')
+    .replace(/^@/, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9._]/g, '')
+    .slice(0, 30) || 'pixorauser';
+}
+
+function errorMessage(error, fallback='Pixora database error'){
+  return error?.message ? `${fallback}: ${error.message}` : fallback;
+}
+
+export async function currentUser(){
+  const { data, error } = await supabase.auth.getUser();
+  if(error) throw error;
+  return data.user || null;
+}
+
+export async function ensureProfile(user){
+  if(!user) return null;
+
+  const meta = user.user_metadata || {};
+  const { data: existing, error: readError } = await supabase
+    .from('profiles')
+    .select(PROFILE_FIELDS)
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if(readError) throw new Error(errorMessage(readError, 'Could not load your Pixora profile'));
+  if(existing) return existing;
+
+  const base = cleanUsername(meta.username || meta.name || user.email?.split('@')[0]);
+  let username = base;
+
+  for(let i=0; i<50; i++){
+    const { data: found, error } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('username', username)
+      .maybeSingle();
+    if(error) throw new Error(errorMessage(error, 'Could not check your Pixora username'));
+    if(!found) break;
+    username = cleanUsername(`${base.slice(0,24)}_${1000 + Math.floor(Math.random()*9000)}`);
+  }
+
+  const profile = {
+    id: user.id,
+    name: String(meta.name || base || 'Pixora User').trim(),
+    username,
+    avatar_url: meta.avatar_url || '',
+    bio: meta.bio || ''
+  };
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .upsert(profile, { onConflict: 'id' })
+    .select(PROFILE_FIELDS)
+    .single();
+
+  if(error) throw new Error(errorMessage(error, 'Could not create your Pixora profile'));
+  return data;
+}
+
+export async function myProfile(){
+  return ensureProfile(await currentUser());
+}
+
+export async function getProfileByUsername(username){
+  const key = cleanUsername(username);
+  if(!key) return null;
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select(PROFILE_FIELDS)
+    .eq('username', key)
+    .maybeSingle();
+
+  if(error) throw new Error(errorMessage(error, 'Could not load this Pixora profile'));
+  return data;
+}
+
+export async function searchProfiles(q=''){
+  const value = String(q || '').trim().replace(/[%(),]/g, '');
+  let query = supabase.from('profiles').select(PROFILE_FIELDS).order('name').limit(50);
+  if(value) query = query.or(`name.ilike.%${value}%,username.ilike.%${value}%`);
+
+  const { data, error } = await query;
+  if(error) throw new Error(errorMessage(error, 'Could not search Pixora users'));
+  return data || [];
+}
+
+export async function updateProfile(values){
+  const user = await currentUser();
+  if(!user) throw new Error('Please log in first.');
+
+  const username = cleanUsername(values.username);
+  const payload = {
+    name: String(values.name || 'Pixora User').trim() || 'Pixora User',
+    username,
+    bio: String(values.bio || '').trim(),
+    avatar_url: values.avatar_url || ''
+  };
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .update(payload)
+    .eq('id', user.id)
+    .select(PROFILE_FIELDS)
+    .single();
+
+  if(error) throw new Error(errorMessage(error, 'Could not update your Pixora profile'));
+  return data;
+}
+
+export async function uploadImage(file, folder='posts'){
+  const user = await currentUser();
+  if(!user) throw new Error('Please log in first.');
+  if(!file) throw new Error('Choose an image first.');
+
+  const ext = (file.name?.split('.').pop() || 'jpg')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '') || 'jpg';
+  const path = `${user.id}/${folder}/${crypto.randomUUID()}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from('posts')
+    .upload(path, file, {
+      upsert: false,
+      contentType: file.type || 'image/jpeg'
+    });
+
+  if(error) throw new Error(errorMessage(error, 'Image upload failed. Make sure the posts storage bucket exists.'));
+  return supabase.storage.from('posts').getPublicUrl(path).data.publicUrl;
+}
+
+async function getProfilesByIds(ids){
+  const unique = [...new Set((ids || []).filter(Boolean))];
+  if(!unique.length) return new Map();
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select(PROFILE_FIELDS)
+    .in('id', unique);
+
+  if(error) throw new Error(errorMessage(error, 'Could not load Pixora profiles'));
+  return new Map((data || []).map(p => [p.id, p]));
+}
+
+export async function listPosts(){
+  const { data: posts, error } = await supabase
+    .from('posts')
+    .select('id,author_id,content,image_url,created_at')
+    .order('created_at', { ascending: false })
+    .limit(100);
+
+  if(error) throw new Error(errorMessage(error, 'Could not load Pixora posts'));
+
+  const profiles = await getProfilesByIds((posts || []).map(p => p.author_id));
+  return (posts || []).map(p => ({
+    ...p,
+    profile: profiles.get(p.author_id) || null
+  }));
+}
+
+export async function createPost({content, imageUrl}){
+  const user = await currentUser();
+  if(!user) throw new Error('Please log in first.');
+
+  const { data, error } = await supabase
+    .from('posts')
+    .insert({
+      author_id: user.id,
+      content: String(content || '').trim(),
+      image_url: imageUrl || null
+    })
+    .select('id,author_id,content,image_url,created_at')
+    .single();
+
+  if(error) throw new Error(errorMessage(error, 'Could not publish post'));
+  return data;
+}
+
+export async function isFollowing(userId){
+  const me = await currentUser();
+  if(!me || !userId) return false;
+
+  const { data, error } = await supabase
+    .from('follows')
+    .select('follower_id,following_id')
+    .eq('follower_id', me.id)
+    .eq('following_id', userId)
+    .maybeSingle();
+
+  if(error) throw new Error(errorMessage(error, 'Could not check follow status'));
+  return !!data;
+}
+
+export async function toggleFollow(userId){
+  const me = await currentUser();
+  if(!me) throw new Error('Please log in first.');
+  if(me.id === userId) return false;
+
+  const { data, error: readError } = await supabase
+    .from('follows')
+    .select('follower_id,following_id')
+    .eq('follower_id', me.id)
+    .eq('following_id', userId)
+    .maybeSingle();
+
+  if(readError) throw new Error(errorMessage(readError, 'Could not check follow status'));
+
+  if(data){
+    const { error } = await supabase
+      .from('follows')
+      .delete()
+      .eq('follower_id', me.id)
+      .eq('following_id', userId);
+    if(error) throw new Error(errorMessage(error, 'Could not unfollow this user'));
+    return false;
+  }
+
+  const { error } = await supabase
+    .from('follows')
+    .insert({ follower_id: me.id, following_id: userId });
+  if(error) throw new Error(errorMessage(error, 'Could not follow this user'));
+  return true;
+}
+
+export async function getCounts(userId){
+  const results = await Promise.all([
+    supabase.from('follows').select('*', { count:'exact', head:true }).eq('following_id', userId),
+    supabase.from('follows').select('*', { count:'exact', head:true }).eq('follower_id', userId),
+    supabase.from('posts').select('*', { count:'exact', head:true }).eq('author_id', userId)
+  ]);
+
+  for(const r of results) if(r.error) throw new Error(errorMessage(r.error, 'Could not load profile counts'));
+  return {
+    followers: results[0].count || 0,
+    following: results[1].count || 0,
+    posts: results[2].count || 0
+  };
+}
+
+async function getOrCreateConversation(otherId){
+  const me = await currentUser();
+  if(!me) throw new Error('Please log in first.');
+  if(me.id === otherId) throw new Error('You cannot message yourself.');
+
+  const { data: mine, error: mineError } = await supabase
+    .from('conversation_members')
+    .select('conversation_id')
+    .eq('user_id', me.id);
+  if(mineError) throw new Error(errorMessage(mineError, 'Could not load your conversations'));
+
+  const ids = (mine || []).map(x => x.conversation_id);
+  if(ids.length){
+    const { data: members, error } = await supabase
+      .from('conversation_members')
+      .select('conversation_id,user_id')
+      .in('conversation_id', ids);
+    if(error) throw new Error(errorMessage(error, 'Could not load conversation members'));
+
+    const match = (members || []).find(x => x.user_id === otherId);
+    if(match) return match.conversation_id;
+  }
+
+  const { data: conversation, error: conversationError } = await supabase
+    .from('conversations')
+    .insert({})
+    .select('id')
+    .single();
+  if(conversationError) throw new Error(errorMessage(conversationError, 'Could not create conversation'));
+
+  const { error: membersError } = await supabase
+    .from('conversation_members')
+    .insert([
+      { conversation_id: conversation.id, user_id: me.id },
+      { conversation_id: conversation.id, user_id: otherId }
+    ]);
+  if(membersError) throw new Error(errorMessage(membersError, 'Could not add conversation members'));
+
+  return conversation.id;
+}
+
+export async function listConversations(){
+  const me = await currentUser();
+  if(!me) throw new Error('Please log in first.');
+
+  const { data: mine, error } = await supabase
+    .from('conversation_members')
+    .select('conversation_id')
+    .eq('user_id', me.id);
+  if(error) throw new Error(errorMessage(error, 'Could not load conversations'));
+
+  const conversationIds = [...new Set((mine || []).map(x => x.conversation_id))];
+  if(!conversationIds.length) return [];
+
+  const { data: members, error: membersError } = await supabase
+    .from('conversation_members')
+    .select('conversation_id,user_id')
+    .in('conversation_id', conversationIds);
+  if(membersError) throw new Error(errorMessage(membersError, 'Could not load conversation members'));
+
+  const otherIds = [...new Set((members || []).filter(m => m.user_id !== me.id).map(m => m.user_id))];
+  const profiles = await getProfilesByIds(otherIds);
+
+  const { data: messages, error: messagesError } = await supabase
+    .from('messages')
+    .select('id,conversation_id,sender_id,content,created_at,read_at')
+    .in('conversation_id', conversationIds)
+    .order('created_at', { ascending:false });
+  if(messagesError) throw new Error(errorMessage(messagesError, 'Could not load messages'));
+
+  const latest = new Map();
+  for(const message of (messages || [])){
+    if(!latest.has(message.conversation_id)) latest.set(message.conversation_id, message);
+  }
+
+  const result = [];
+  for(const conversationId of conversationIds){
+    const member = (members || []).find(m => m.conversation_id === conversationId && m.user_id !== me.id);
+    if(!member) continue;
+    result.push({
+      conversation_id: conversationId,
+      user: profiles.get(member.user_id) || { id:member.user_id, name:'Pixora User', username:'user', avatar_url:'' },
+      last: latest.get(conversationId) || null
+    });
+  }
+
+  return result.sort((a,b) => new Date(b.last?.created_at || 0) - new Date(a.last?.created_at || 0));
+}
+
+export async function listMessages(otherId){
+  const conversationId = await getOrCreateConversation(otherId);
+  const { data, error } = await supabase
+    .from('messages')
+    .select('id,conversation_id,sender_id,content,created_at,read_at')
+    .eq('conversation_id', conversationId)
+    .order('created_at', { ascending:true });
+  if(error) throw new Error(errorMessage(error, 'Could not load this conversation'));
+  return data || [];
+}
+
+export async function sendMessage(recipientId, content){
+  const me = await currentUser();
+  if(!me) throw new Error('Please log in first.');
+  if(!recipientId) throw new Error('Recipient not found.');
+  if(me.id === recipientId) throw new Error('You cannot message yourself.');
+
+  const text = String(content || '').trim();
+  if(!text) return null;
+
+  const { data: recipient, error: recipientError } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('id', recipientId)
+    .maybeSingle();
+  if(recipientError) throw new Error(errorMessage(recipientError, 'Could not find this user'));
+  if(!recipient) throw new Error('User not found.');
+
+  const conversationId = await getOrCreateConversation(recipientId);
+  const { data, error } = await supabase
+    .from('messages')
+    .insert({ conversation_id:conversationId, sender_id:me.id, content:text })
+    .select('id,conversation_id,sender_id,content,created_at,read_at')
+    .single();
+  if(error) throw new Error(errorMessage(error, 'Message could not be sent'));
+  return data;
+}
+
+export async function listNotifications(){
+  const me = await currentUser();
+  if(!me) throw new Error('Please log in first.');
+
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('id,user_id,actor_id,type,title,message,post_id,conversation_id,is_read,created_at')
+    .eq('user_id', me.id)
+    .order('created_at', { ascending:false })
+    .limit(100);
+  if(error) throw new Error(errorMessage(error, 'Could not load notifications'));
+
+  const profiles = await getProfilesByIds((data || []).map(n => n.actor_id));
+  return (data || []).map(n => ({ ...n, actor:profiles.get(n.actor_id) || null }));
+}
+
+export async function markNotificationsRead(){
+  const me = await currentUser();
+  if(!me) return;
+  const { error } = await supabase
+    .from('notifications')
+    .update({ is_read:true })
+    .eq('user_id', me.id)
+    .eq('is_read', false);
+  if(error) throw new Error(errorMessage(error, 'Could not mark notifications as read'));
+}
+
+export async function unreadCounts(){
+  const me = await currentUser();
+  if(!me) return { notifications:0, messages:0 };
+
+  const { count, error } = await supabase
+    .from('notifications')
+    .select('*', { count:'exact', head:true })
+    .eq('user_id', me.id)
+    .eq('is_read', false);
+  if(error) throw new Error(errorMessage(error, 'Could not load notification count'));
+
+  return { notifications:count || 0, messages:0 };
+}
