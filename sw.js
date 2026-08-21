@@ -1,4 +1,4 @@
-const CACHE = 'pixora-v4';
+const CACHE = 'pixora-v5';
 const ASSETS = [
   './','index.html','dashboard.html','search.html','create.html','messages.html','chat.html',
   'notifications.html','profile.html','login.html','signup.html','styles.css','supabase.js',

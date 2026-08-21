@@ -30,5 +30,5 @@ The app avoids PostgREST embedded relationship queries. Profiles are loaded sepa
 "Could not find a relationship between 'posts' and 'author_id' in the schema cache"
 are not produced by the frontend.
 
-The old localStorage demo data file has been removed.
-The service worker cache was also replaced with a new Pixora cache version so GitHub Pages does not keep serving the previous JavaScript files.
+The old localStorage demo data layer is not used by the app and is removed from this build.
+The service worker cache is bumped to a new Pixora version so GitHub Pages does not keep serving the previous JavaScript files.

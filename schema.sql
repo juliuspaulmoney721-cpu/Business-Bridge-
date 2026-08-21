@@ -52,6 +52,29 @@ alter table public.posts add column if not exists content text;
 alter table public.posts add column if not exists image_url text;
 alter table public.posts add column if not exists created_at timestamptz default now();
 
+-- Migrate the old Pixora posts column if it still exists.
+-- The previous build used posts.user_id; the repaired frontend uses posts.author_id.
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema='public' and table_name='posts'
+      and column_name='user_id' and data_type='uuid'
+  ) then
+    update public.posts p
+    set author_id = p.user_id
+    where p.author_id is null
+      and exists (select 1 from public.profiles pr where pr.id = p.user_id);
+
+    alter table public.posts drop column if exists user_id;
+  end if;
+end $$;
+
+alter table public.posts drop constraint if exists posts_author_id_fkey;
+alter table public.posts
+  add constraint posts_author_id_fkey
+  foreign key (author_id) references public.profiles(id) on delete cascade;
+
 create table if not exists public.follows (
   id uuid primary key default gen_random_uuid(),
   follower_id uuid not null references public.profiles(id) on delete cascade,
@@ -59,6 +82,9 @@ create table if not exists public.follows (
   created_at timestamptz not null default now(),
   unique(follower_id,following_id)
 );
+
+alter table public.follows add column if not exists id uuid default gen_random_uuid();
+alter table public.follows add column if not exists created_at timestamptz default now();
 
 create table if not exists public.conversations (
   id uuid primary key default gen_random_uuid(),
@@ -174,22 +200,67 @@ create policy "Users can follow" on public.follows for insert to authenticated w
 drop policy if exists "Users can unfollow" on public.follows;
 create policy "Users can unfollow" on public.follows for delete to authenticated using(follower_id=auth.uid());
 
+-- RLS helper. It is SECURITY DEFINER so checking membership does not
+-- recursively evaluate the conversation_members SELECT policy.
+create or replace function public.is_conversation_member(p_conversation_id uuid, p_user_id uuid)
+returns boolean
+language sql
+security definer
+set search_path = public
+as $$
+  select exists(
+    select 1
+    from public.conversation_members
+    where conversation_id = p_conversation_id
+      and user_id = p_user_id
+  );
+$$;
+
 drop policy if exists "Members can view conversations" on public.conversations;
-create policy "Members can view conversations" on public.conversations for select to authenticated using(exists(select 1 from public.conversation_members cm where cm.conversation_id=conversations.id and cm.user_id=auth.uid()));
+create policy "Members can view conversations"
+on public.conversations
+for select to authenticated
+using (public.is_conversation_member(id, auth.uid()));
+
 drop policy if exists "Authenticated users can create conversations" on public.conversations;
-create policy "Authenticated users can create conversations" on public.conversations for insert to authenticated with check(true);
+create policy "Authenticated users can create conversations"
+on public.conversations
+for insert to authenticated
+with check (true);
 
 drop policy if exists "Members can view members" on public.conversation_members;
-create policy "Members can view members" on public.conversation_members for select to authenticated using(exists(select 1 from public.conversation_members cm where cm.conversation_id=conversation_members.conversation_id and cm.user_id=auth.uid()));
+create policy "Members can view members"
+on public.conversation_members
+for select to authenticated
+using (public.is_conversation_member(conversation_id, auth.uid()));
+
 drop policy if exists "Authenticated users can add conversation members" on public.conversation_members;
-create policy "Authenticated users can add conversation members" on public.conversation_members for insert to authenticated with check(true);
+create policy "Authenticated users can add conversation members"
+on public.conversation_members
+for insert to authenticated
+with check (true);
 
 drop policy if exists "Conversation members can read messages" on public.messages;
-create policy "Conversation members can read messages" on public.messages for select to authenticated using(exists(select 1 from public.conversation_members cm where cm.conversation_id=messages.conversation_id and cm.user_id=auth.uid()));
+create policy "Conversation members can read messages"
+on public.messages
+for select to authenticated
+using (public.is_conversation_member(conversation_id, auth.uid()));
+
 drop policy if exists "Users can send messages" on public.messages;
-create policy "Users can send messages" on public.messages for insert to authenticated with check(sender_id=auth.uid() and exists(select 1 from public.conversation_members cm where cm.conversation_id=messages.conversation_id and cm.user_id=auth.uid()));
+create policy "Users can send messages"
+on public.messages
+for insert to authenticated
+with check (
+  sender_id = auth.uid()
+  and public.is_conversation_member(conversation_id, auth.uid())
+);
+
 drop policy if exists "Recipients can update read status" on public.messages;
-create policy "Recipients can update read status" on public.messages for update to authenticated using(exists(select 1 from public.conversation_members cm where cm.conversation_id=messages.conversation_id and cm.user_id=auth.uid())) with check(exists(select 1 from public.conversation_members cm where cm.conversation_id=messages.conversation_id and cm.user_id=auth.uid()));
+create policy "Recipients can update read status"
+on public.messages
+for update to authenticated
+using (public.is_conversation_member(conversation_id, auth.uid()))
+with check (public.is_conversation_member(conversation_id, auth.uid()));
 
 drop policy if exists "Users can read their notifications" on public.notifications;
 create policy "Users can read their notifications" on public.notifications for select to authenticated using(user_id=auth.uid());
