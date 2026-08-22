@@ -16,3 +16,6 @@ Do this in order:
 5. Open Pixora again and test Create -> Publish post.
 
 If publishing still fails, the exact Supabase error shown on screen is the next thing to fix; do not delete tables or create random new SQL tabs.
+
+
+Messaging fix applied: Search and Messages now open chats by the profile UUID instead of relying on a username. This prevents User not found when a profile has a missing/blank username. Chat still supports the old ?user= link.

@@ -69,6 +69,17 @@ export async function myProfile(){
   return ensureProfile(await currentUser());
 }
 
+export async function getProfileById(id){
+  if(!id) return null;
+  const { data, error } = await supabase
+    .from('profiles')
+    .select(PROFILE_FIELDS)
+    .eq('id', id)
+    .maybeSingle();
+  if(error) throw new Error(errorMessage(error, 'Could not load this Pixora profile'));
+  return data;
+}
+
 export async function getProfileByUsername(username){
   const key = cleanUsername(username);
   if(!key) return null;
