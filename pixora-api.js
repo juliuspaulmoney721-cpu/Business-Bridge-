@@ -250,6 +250,72 @@ export async function createPost({content, imageUrl}){
   return result.data;
 }
 
+
+export async function updatePost(postId, {content, imageUrl} = {}){
+  const me = await currentUser();
+  if(!me) throw new Error('Please log in first.');
+  if(!postId) throw new Error('Post not found.');
+
+  const payload = {
+    content: String(content || '').trim(),
+    image_url: imageUrl || null
+  };
+
+  let result = await supabase
+    .from('posts')
+    .update(payload)
+    .eq('id', postId)
+    .eq('author_id', me.id)
+    .select('*')
+    .single();
+
+  if(result.error && /author_id.*column|column.*author_id.*does not exist/i.test(result.error.message || '')){
+    result = await supabase
+      .from('posts')
+      .update(payload)
+      .eq('id', postId)
+      .eq('user_id', me.id)
+      .select('*')
+      .single();
+  }
+
+  if(result.error) throw new Error(errorMessage(result.error, 'Could not update post'));
+  return result.data;
+}
+
+export async function deletePost(postId){
+  const me = await currentUser();
+  if(!me) throw new Error('Please log in first.');
+  if(!postId) throw new Error('Post not found.');
+
+  let result = await supabase
+    .from('posts')
+    .delete()
+    .eq('id', postId)
+    .eq('author_id', me.id);
+
+  if(result.error && /author_id.*column|column.*author_id.*does not exist/i.test(result.error.message || '')){
+    result = await supabase
+      .from('posts')
+      .delete()
+      .eq('id', postId)
+      .eq('user_id', me.id);
+  }
+
+  if(result.error) throw new Error(errorMessage(result.error, 'Could not delete post'));
+}
+
+export async function deletePostImage(imageUrl){
+  if(!imageUrl) return;
+  try{
+    const marker = '/storage/v1/object/public/posts/';
+    const i = String(imageUrl).indexOf(marker);
+    if(i < 0) return;
+    const path = decodeURIComponent(String(imageUrl).slice(i + marker.length));
+    if(path) await supabase.storage.from('posts').remove([path]);
+  }catch{}
+}
+
 export async function isFollowing(userId){
   const me = await currentUser();
   if(!me || !userId) return false;
@@ -333,41 +399,75 @@ export async function listConversations(){
   const me = await currentUser();
   if(!me) throw new Error('Please log in first.');
 
-  const { data: members, error } = await supabase.rpc('get_my_conversation_members', {
-    p_user_id: me.id
-  });
-  if(error) throw new Error(errorMessage(error, 'Could not load conversations'));
+  // The membership RPC is the authoritative source for the people in a
+  // conversation. Keep a message-based fallback so the inbox still works
+  // on projects where the older RPC has not refreshed in Supabase yet.
+  let members = null;
+  const rpc = await supabase.rpc('get_my_conversation_members', { p_user_id: me.id });
+  if(!rpc.error) members = rpc.data || [];
 
-  const conversationIds = [...new Set((members || []).map(x => x.conversation_id))];
-  if(!conversationIds.length) return [];
+  if(members?.length){
+    const conversationIds = [...new Set(members.map(x => x.conversation_id))];
+    const otherIds = [...new Set(members.filter(m => m.user_id !== me.id).map(m => m.user_id))];
+    const profiles = await getProfilesByIds(otherIds);
+    const { data: messages, error } = await supabase
+      .from('messages')
+      .select('id,conversation_id,sender_id,content,created_at,read_at')
+      .in('conversation_id', conversationIds)
+      .order('created_at', { ascending:false });
+    if(error) throw new Error(errorMessage(error, 'Could not load messages'));
+    const latest = new Map();
+    for(const message of (messages || [])) if(!latest.has(message.conversation_id)) latest.set(message.conversation_id, message);
+    const result=conversationIds.map(conversationId=>{
+      const member=members.find(m=>m.conversation_id===conversationId&&m.user_id!==me.id);
+      if(!member)return null;
+      return {conversation_id:conversationId,user:profiles.get(member.user_id)||{id:member.user_id,name:'Pixora User',username:'user',avatar_url:''},last:latest.get(conversationId)||null};
+    }).filter(Boolean);
 
-  const otherIds = [...new Set((members || []).filter(m => m.user_id !== me.id).map(m => m.user_id))];
-  const profiles = await getProfilesByIds(otherIds);
+    // Merge recently messaged recipients so a brand-new outgoing chat is
+    // visible immediately, even before the membership RPC cache catches up.
+    try{
+      const recent=JSON.parse(localStorage.getItem('pixora_recent_conversations')||'[]');
+      for(const recipientId of recent){
+        if(result.some(x=>x.user?.id===recipientId)) continue;
+        const profile=profiles.get(recipientId)||await getProfileById(recipientId);
+        if(!profile||profile.id===me.id) continue;
+        const conversationId=await getOrCreateConversation(recipientId);
+        const {data:recentMessages}=await supabase.from('messages').select('id,conversation_id,sender_id,content,created_at,read_at').eq('conversation_id',conversationId).order('created_at',{ascending:false}).limit(1);
+        result.push({conversation_id:conversationId,user:profile,last:recentMessages?.[0]||null});
+      }
+    }catch{}
+    return result.sort((a,b)=>new Date(b.last?.created_at||0)-new Date(a.last?.created_at||0));
+  }
 
-  const { data: messages, error: messagesError } = await supabase
+  // Fallback: RLS lets a conversation member read messages in their own
+  // conversations. If the membership RPC is unavailable/empty, use the
+  // participants visible in those messages to build the inbox.
+  const { data: messages, error } = await supabase
     .from('messages')
     .select('id,conversation_id,sender_id,content,created_at,read_at')
-    .in('conversation_id', conversationIds)
-    .order('created_at', { ascending:false });
-  if(messagesError) throw new Error(errorMessage(messagesError, 'Could not load messages'));
+    .order('created_at',{ascending:false})
+    .limit(500);
+  if(error) throw new Error(errorMessage(error, 'Could not load messages'));
+  if(!messages?.length) return [];
 
-  const latest = new Map();
-  for(const message of (messages || [])){
-    if(!latest.has(message.conversation_id)) latest.set(message.conversation_id, message);
+  const byConversation=new Map();
+  for(const message of messages){
+    let row=byConversation.get(message.conversation_id);
+    if(!row) row={conversation_id:message.conversation_id,messages:[]};
+    row.messages.push(message);byConversation.set(message.conversation_id,row);
   }
-
-  const result = [];
-  for(const conversationId of conversationIds){
-    const member = (members || []).find(m => m.conversation_id === conversationId && m.user_id !== me.id);
-    if(!member) continue;
-    result.push({
-      conversation_id: conversationId,
-      user: profiles.get(member.user_id) || { id:member.user_id, name:'Pixora User', username:'user', avatar_url:'' },
-      last: latest.get(conversationId) || null
-    });
+  const otherIds=[];
+  const result=[];
+  for(const row of byConversation.values()){
+    const otherMessage=row.messages.find(m=>m.sender_id!==me.id);
+    if(!otherMessage) continue;
+    const otherId=otherMessage.sender_id;
+    otherIds.push(otherId);
+    result.push({conversation_id:row.conversation_id,otherId,last:row.messages[0]});
   }
-
-  return result.sort((a,b) => new Date(b.last?.created_at || 0) - new Date(a.last?.created_at || 0));
+  const profiles=await getProfilesByIds(otherIds);
+  return result.map(x=>({...x,user:profiles.get(x.otherId)||{id:x.otherId,name:'Pixora User',username:'user',avatar_url:''}}));
 }
 
 export async function listMessages(otherId){
@@ -405,6 +505,15 @@ export async function sendMessage(recipientId, content){
     .select('id,conversation_id,sender_id,content,created_at,read_at')
     .single();
   if(error) throw new Error(errorMessage(error, 'Message could not be sent'));
+
+  // Keep the recipient locally as a lightweight inbox index. This makes the
+  // conversation appear immediately even when the membership RPC is stale.
+  try{
+    const key='pixora_recent_conversations';
+    const current=JSON.parse(localStorage.getItem(key)||'[]');
+    const next=[recipientId,...current.filter(id=>id!==recipientId)].slice(0,50);
+    localStorage.setItem(key,JSON.stringify(next));
+  }catch{}
   return data;
 }
 
